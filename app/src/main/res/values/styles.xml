@@ -1,0 +1,61 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="LightTheme" parent="AppTheme">
+        <item name="textColor">#000000</item>
+        <item name="metaTextColor">#606060</item>
+        <item name="bgColor">#ffffff</item>
+        <item name="icColor">#000000</item>
+    </style>
+
+    <style name="DarkTheme" parent="AppTheme">
+        <item name="textColor">#ffffff</item>
+        <item name="metaTextColor">#aeaeae</item>
+        <item name="bgColor">#0B0B0B</item>
+        <item name="icColor">#FFFFFF</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="toolbar_textview" parent="Widget.AppCompat.TextView">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="login_editText" parent="Widget.AppCompat.EditText">
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="EditTextProfileUpdate" parent="Widget.AppCompat.EditText">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">?attr/textColor</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:paddingStart">10dp</item>
+    </style>
+
+    <style name="txt_profile" parent="Widget.AppCompat.TextView">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">?attr/metaTextColor</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="txt_bold_small_title" parent="Widget.AppCompat.TextView">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">?attr/textColor</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="ChatEditText" parent="Widget.AppCompat.EditText">
+        <item name="android:textColorHint">?attr/metaTextColor</item>
+        <item name="android:textCursorDrawable">@color/white</item>
+    </style>
+
+
+</resources>

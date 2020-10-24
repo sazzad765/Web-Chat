@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/chat_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingTop="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="16dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profileImage"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_launcher_foreground"
+        app:civ_border_color="#FF000000"
+        app:civ_border_width="1dp" />
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/profileImage"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="5dp"
+        android:gravity="center|start"
+        android:layout_toEndOf="@+id/profileImage"
+        android:text="Saiful Islam Saif"
+        android:textColor="?attr/textColor"
+        android:textSize="16dp"
+        android:textStyle="bold" />
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/active_status"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        app:civ_border_color="#FF000000"
+        android:src="#39DF3F"
+        app:civ_border_width="1dp"
+        android:layout_alignEnd="@+id/profileImage"
+        android:layout_alignBottom="@+id/profileImage"/>
+
+</RelativeLayout>

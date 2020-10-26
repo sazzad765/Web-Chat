@@ -23,6 +23,7 @@ import com.team15.webchat.Session.SessionManager;
 import com.team15.webchat.UpdateProfileActivity;
 import com.team15.webchat.ViewModel.UserViewModel;
 
+import java.security.Principal;
 import java.util.HashMap;
 
 import retrofit2.Call;
@@ -49,6 +50,18 @@ public class ProfileFragment extends Fragment {
         txtPhone = view.findViewById(R.id.txtPhone);
         profile_image = view.findViewById(R.id.profile_image);
 
+        txt_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), UpdateProfileActivity.class);
+                startActivity(intent);
+            }
+        });
+        setProfile();
+        return view;
+    }
+
+    private void setProfile() {
         sessionManager = new SessionManager(getActivity());
         HashMap<String, String> userInfo = sessionManager.get_user();
         final String userId = userInfo.get(SessionManager.USER_ID);
@@ -56,9 +69,10 @@ public class ProfileFragment extends Fragment {
 
         userViewModel = ViewModelProviders.of(getActivity()).get(UserViewModel.class);
 
-        userViewModel.getUser("Bearer "+api, userId).observe(getActivity(), new Observer<User>() {
+        userViewModel.getUser("Bearer " + api, userId).observe(getActivity(), new Observer<User>() {
             @Override
             public void onChanged(User user) {
+
                 txtName.setText(user.getName());
                 txtName1.setText(user.getName());
                 txtPhone.setText(user.getPhone());
@@ -70,14 +84,11 @@ public class ProfileFragment extends Fragment {
                         .into(profile_image);
             }
         });
-        txt_edit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), UpdateProfileActivity.class);
-                startActivity(intent);
-            }
-        });
+    }
 
-        return view;
+    @Override
+    public void onResume() {
+        super.onResume();
+        setProfile();
     }
 }

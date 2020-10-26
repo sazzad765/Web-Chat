@@ -1,25 +1,34 @@
 package com.team15.webchat.Repositories;
 
+import android.os.AsyncTask;
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.team15.webchat.Api.APIClient;
 import com.team15.webchat.Api.APIInterface;
 import com.team15.webchat.Model.ApiResponse;
+import com.team15.webchat.Model.DeviceReg;
 import com.team15.webchat.Model.Login;
 import com.team15.webchat.Model.User;
 
 import java.util.List;
 import java.util.Observable;
+
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static android.content.ContentValues.TAG;
 
 
 public class UserRepository extends Observable {
     private APIInterface apiInterface;
     private MutableLiveData<List<User>> allNotes = new MutableLiveData<>();
     final MutableLiveData<User> userProfile = new MutableLiveData<>();
+
     private static UserRepository userRepository;
 
     public static UserRepository getInstance() {
@@ -31,6 +40,9 @@ public class UserRepository extends Observable {
 
     private UserRepository() {
         apiInterface = APIClient.getRetrofitInstance().create(APIInterface.class);
+    }
+    public void updateDeviceId(DeviceReg deviceReg) {
+        new UpdateDeviceIdAsyncTask(apiInterface).execute(deviceReg);
     }
 
 //    public void update(Note note) {
@@ -89,17 +101,46 @@ public class UserRepository extends Observable {
         return apiResponse;
     }
 
-//    private static class UpdateNoteAsyncTask extends AsyncTask<Note, Void, Void> {
-//        private NoteDao noteDao;
-//
-//        private UpdateNoteAsyncTask(NoteDao noteDao) {
-//            this.noteDao = noteDao;
-//        }
-//
-//        @Override
-//        protected Void doInBackground(Note... notes) {
-//            noteDao.update(notes[0]);
-//            return null;
-//        }
-//    }
+    public LiveData<ApiResponse> updateProfile(String token,String userId,String name,String phone,String email){
+        final MutableLiveData<ApiResponse> apiResponse = new MutableLiveData<>();
+        Call<ApiResponse> call2 = apiInterface.updateProfile(token,userId,name,phone,email);
+        call2.enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                apiResponse.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse> call, Throwable t) {
+
+            }
+        });
+        return apiResponse;
+    }
+
+    private static class UpdateDeviceIdAsyncTask extends AsyncTask<DeviceReg , Void, Void> {
+        private final APIInterface apiInterface;
+        private UpdateDeviceIdAsyncTask(APIInterface apiInterface) {
+            this.apiInterface = apiInterface;
+        }
+
+
+        @Override
+        protected Void doInBackground(DeviceReg... deviceRegs) {
+            Call<ApiResponse> call = apiInterface.updateToken(deviceRegs[0].getToken(),deviceRegs[0].getDeviceId(),deviceRegs[0].getUserId());
+            call.enqueue(new Callback<ApiResponse>() {
+                @Override
+                public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+
+                }
+
+                @Override
+                public void onFailure(Call<ApiResponse> call, Throwable t) {
+
+                }
+            });
+            return null;
+        }
+    }
+
 }

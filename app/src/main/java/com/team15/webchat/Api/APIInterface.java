@@ -1,19 +1,15 @@
 package com.team15.webchat.Api;
 
-import com.google.gson.JsonObject;
+import com.team15.webchat.Model.ActiveUser;
 import com.team15.webchat.Model.ApiResponse;
 import com.team15.webchat.Model.Login;
 import com.team15.webchat.Model.User;
 
 import retrofit2.Call;
-import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
-import retrofit2.http.GET;
 import retrofit2.http.Header;
-import retrofit2.http.Headers;
 import retrofit2.http.POST;
-import retrofit2.http.Query;
 
 public interface APIInterface {
 
@@ -39,6 +35,7 @@ public interface APIInterface {
             @Field("app_id") String app_id,
             @Field("email") String email
     );
+
     @FormUrlEncoded
     @POST("auth/profile")
     Call<User> getUser(
@@ -46,13 +43,32 @@ public interface APIInterface {
             @Field("user_id") String user_id
     );
 
-//    @FormUrlEncoded
-//    @POST("updateProfile.php")
-//    Call<JsonObject> updateAccount(
-//            @Field("user_id") String user_id,
-//            @Field("fname") String fname,
-//            @Field("lname") String lname
-//    );
+    @FormUrlEncoded
+    @POST("auth/profile_update")
+    Call<ApiResponse> updateProfile(
+            @Header("Authorization") String token,
+            @Field("user_id") String user_id,
+            @Field("name") String name,
+            @Field("phone") String phone,
+            @Field("email") String email
+    );
+
+    @FormUrlEncoded
+    @POST("auth/update_device_id")
+    Call<ApiResponse> updateToken(
+            @Header("Authorization") String token,
+            @Field("reg_id") String deviceId,
+            @Field("user_id") String user_id
+
+    );
+
+    @FormUrlEncoded
+    @POST("auth/active_users")
+    Call<ActiveUser> activeUser(
+            @Header("Authorization") String token,
+            @Field("app_id") String app_id
+
+    );
 
 
 }

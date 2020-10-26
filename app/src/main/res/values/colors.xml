@@ -10,4 +10,6 @@
     <color name="button_background">#91FF8A</color>
 
     <color name="chat_edit_text">#303030</color>
+    <color name="active">#61D366</color>
+    <color name="inactive">#A4A5A4</color>
 </resources>

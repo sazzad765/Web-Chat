@@ -3,7 +3,12 @@ package com.team15.webchat;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
+import com.team15.webchat.FCM.Config;
 import com.team15.webchat.Fragment.ActiveListFragment;
 import com.team15.webchat.Fragment.ChatListFragment;
 import com.team15.webchat.Fragment.HomeFragment;
@@ -33,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private String userType = null;
     SessionManager sessionManager;
     private ImageView imgMenu;
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +125,15 @@ public class MainActivity extends AppCompatActivity {
         }else {
             bottomNavigation.show(ID_CHAT, true);
         }
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(Config.PUSH_NOTIFICATION)) {
+                    // new push message is received
+
+                }
+            }
+        };
 
     }
 
@@ -133,6 +149,20 @@ public class MainActivity extends AppCompatActivity {
         startService(new Intent(MainActivity.this, HeadViewService.class));
         finish();
 
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(Config.PUSH_NOTIFICATION));
+
+//        NotificationUtils.clearNotifications();
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        super.onPause();
     }
 
     @Override

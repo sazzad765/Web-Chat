@@ -68,10 +68,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     String key_Type = response.getLoginInfo().get(0).getTokenType();
                     String user_id = response.getLoginInfo().get(0).getUserId().toString();
                     String user_type = response.getLoginInfo().get(0).getType();
-                    deviceReg = new DeviceReg("Bearer " + api_key,token,user_id);
+                    String seller_id = response.getLoginInfo().get(0).getSellerId().toString();
+                    deviceReg = new DeviceReg("Bearer " + api_key, token, user_id);
                     updateDeviceId();
 
-                    sessionManager.createSession(api_key, key_Type, user_id, user_type);
+                    sessionManager.createSession(api_key, key_Type, user_id, user_type, seller_id);
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();

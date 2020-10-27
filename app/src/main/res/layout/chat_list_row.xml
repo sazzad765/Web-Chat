@@ -26,7 +26,7 @@
         android:layout_marginStart="5dp"
         android:layout_toEndOf="@+id/profileImage"
         android:text="Saiful Islam Saif"
-        android:textColor="?attr/textColor"
+        android:textColor="@android:color/black"
         android:textSize="16dp"
         android:textStyle="bold" />
 
@@ -38,8 +38,7 @@
         android:layout_margin="5dp"
         android:layout_toStartOf="@+id/count"
         android:layout_toEndOf="@+id/profileImage"
-        android:text="Seems gcm will take some time"
-        android:textColor="?attr/metaTextColor" />
+        android:text="Seems gcm will take some time" />
 
     <TextView
         android:id="@+id/timestamp"
@@ -48,7 +47,6 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:text="12:00 AM"
-        android:textColor="?attr/metaTextColor"
         android:textSize="10dp" />
 
     <TextView

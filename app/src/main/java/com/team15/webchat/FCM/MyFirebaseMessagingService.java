@@ -14,13 +14,11 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.team15.webchat.App.Config;
 import com.team15.webchat.MainActivity;
 import com.team15.webchat.R;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
-
-    private static final String TAG = "MyFirebaseMsgService";
-
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
@@ -42,7 +40,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
                         .setSmallIcon(R.drawable.ic_launcher_background)
-                        .setContentTitle("Notification")
+                        .setContentTitle("New Message")
                         .setContentText(messageBody)
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)

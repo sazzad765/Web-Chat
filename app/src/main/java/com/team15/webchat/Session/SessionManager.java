@@ -19,6 +19,7 @@ public class SessionManager {
     public static final String KEY_TYPE = "KEY_TYPE";
     public static final String USER_ID = "USER_ID";
     public static final String USER_TYPE = "USER_TYPE";
+    public static final String SELLER_ID = "SELLER_ID";
 
 
     public SessionManager(Context context) {
@@ -29,13 +30,14 @@ public class SessionManager {
         editor.commit();
     }
 
-    public void createSession(String api_key,String key_type,String user_id, String user_type){
+    public void createSession(String api_key,String key_type,String user_id, String user_type,String seller_id){
 
         editor.putBoolean(LOGIN, true);
         editor.putString(API_KEY, api_key);
         editor.putString(KEY_TYPE, key_type);
         editor.putString(USER_ID, user_id);
         editor.putString(USER_TYPE, user_type);
+        editor.putString(SELLER_ID, seller_id);
         editor.apply();
     }
 
@@ -67,6 +69,7 @@ public class SessionManager {
         user.put(KEY_TYPE, sharedPreferences.getString(KEY_TYPE, null));
         user.put(USER_ID, sharedPreferences.getString(USER_ID, null));
         user.put(USER_TYPE, sharedPreferences.getString(USER_TYPE, null));
+        user.put(SELLER_ID, sharedPreferences.getString(SELLER_ID, null));
 
         return user;
     }

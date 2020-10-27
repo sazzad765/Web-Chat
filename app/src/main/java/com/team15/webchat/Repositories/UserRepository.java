@@ -1,27 +1,26 @@
 package com.team15.webchat.Repositories;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.gson.JsonObject;
 import com.team15.webchat.Api.APIClient;
 import com.team15.webchat.Api.APIInterface;
+import com.team15.webchat.App.Config;
 import com.team15.webchat.Model.ApiResponse;
 import com.team15.webchat.Model.DeviceReg;
 import com.team15.webchat.Model.Login;
 import com.team15.webchat.Model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.content.ContentValues.TAG;
 
 
 public class UserRepository extends Observable {
@@ -45,9 +44,13 @@ public class UserRepository extends Observable {
         new UpdateDeviceIdAsyncTask(apiInterface).execute(deviceReg);
     }
 
-//    public void update(Note note) {
-//        new UpdateNoteAsyncTask(noteDao).execute(note);
-//    }
+    public void isOnline(String token,String user_id,String status) {
+        ArrayList<String> list=new ArrayList<String>();
+        list.add(token);
+        list.add(user_id);
+        list.add(status);
+        new IsOnlineAsyncTask(apiInterface).execute(list);
+    }
 
     public LiveData<User> getUser(String token,String userId){
 
@@ -69,7 +72,7 @@ public class UserRepository extends Observable {
 
     public LiveData<Login> getLogin(String phone, String password){
         final MutableLiveData<Login> loginData = new MutableLiveData<>();
-        Call<Login> call2 = apiInterface.getUserLogin(phone,password);
+        Call<Login> call2 = apiInterface.getUserLogin(phone,password, Config.APP_ID);
         call2.enqueue(new Callback<Login>() {
             @Override
             public void onResponse(Call<Login> call, Response<Login> response) {
@@ -123,8 +126,6 @@ public class UserRepository extends Observable {
         private UpdateDeviceIdAsyncTask(APIInterface apiInterface) {
             this.apiInterface = apiInterface;
         }
-
-
         @Override
         protected Void doInBackground(DeviceReg... deviceRegs) {
             Call<ApiResponse> call = apiInterface.updateToken(deviceRegs[0].getToken(),deviceRegs[0].getDeviceId(),deviceRegs[0].getUserId());
@@ -139,6 +140,31 @@ public class UserRepository extends Observable {
 
                 }
             });
+            return null;
+        }
+    }
+
+    private static class IsOnlineAsyncTask extends AsyncTask<List , Void, Void> {
+        private final APIInterface apiInterface;
+        private IsOnlineAsyncTask(APIInterface apiInterface) {
+            this.apiInterface = apiInterface;
+        }
+
+        @Override
+        protected Void doInBackground(List... lists) {
+            Call<JsonObject> call = apiInterface.isOnline(lists[0].get(0).toString(),lists[0].get(1).toString(),lists[0].get(2).toString());
+            call.enqueue(new Callback<JsonObject>() {
+                @Override
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+
+                }
+
+                @Override
+                public void onFailure(Call<JsonObject> call, Throwable t) {
+
+                }
+            });
+
             return null;
         }
     }

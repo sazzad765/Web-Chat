@@ -12,7 +12,6 @@
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardBackgroundColor="?attr/bgColor"
             app:cardElevation="5dp"
             android:layout_margin="10dp">
 
@@ -28,7 +27,7 @@
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
                     android:text="Profile"
-                    android:textColor="?attr/textColor"
+                    android:textColor="@android:color/black"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -61,7 +60,7 @@
                     android:layout_alignParentTop="true"
                     android:layout_alignParentEnd="true"
                     android:text="Edit"
-                    android:textColor="?attr/textColor"
+                    android:textColor="@android:color/black"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -74,7 +73,6 @@
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardBackgroundColor="?attr/bgColor"
             android:layout_margin="10dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -148,7 +146,6 @@
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardBackgroundColor="?attr/bgColor"
             android:layout_margin="10dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout

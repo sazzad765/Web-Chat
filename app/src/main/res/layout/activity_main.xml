@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/bgColor"
     tools:context=".MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -60,19 +59,13 @@
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <View
-        android:id="@+id/view1"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_below="@+id/appBarLayout"
-        android:background="?attr/textColor" />
 
     <FrameLayout
         android:id="@+id/frame_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/bottomNavigation"
-        android:layout_below="@+id/view1"
+        android:layout_below="@+id/appBarLayout"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_marginBottom="-20dp"
@@ -91,11 +84,11 @@
         android:layout_gravity="bottom"
         android:layout_marginStart="0dp"
         android:layout_marginEnd="0dp"
-        app:mbn_backgroundBottomColor="?attr/bgColor"
+        app:mbn_backgroundBottomColor="#ffffff"
         app:mbn_circleColor="#ffffff"
         app:mbn_countBackgroundColor="#ff6f00"
-        app:mbn_countTextColor="?attr/textColor"
-        app:mbn_defaultIconColor="?attr/icColor"
+        app:mbn_countTextColor="#000000"
+        app:mbn_defaultIconColor="#000000"
         app:mbn_rippleColor="#2f424242"
         app:mbn_selectedIconColor="#3c415e"
         app:mbn_shadowColor="#1f212121" />

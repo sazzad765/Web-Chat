@@ -3,6 +3,7 @@ package com.team15.webchat;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.content.BroadcastReceiver;
@@ -19,13 +20,14 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
-import com.team15.webchat.FCM.Config;
+import com.team15.webchat.App.Config;
 import com.team15.webchat.Fragment.ActiveListFragment;
 import com.team15.webchat.Fragment.ChatListFragment;
 import com.team15.webchat.Fragment.HomeFragment;
 import com.team15.webchat.Fragment.ProfileFragment;
 import com.team15.webchat.Heads.HeadViewService;
 import com.team15.webchat.Session.SessionManager;
+import com.team15.webchat.ViewModel.UserViewModel;
 
 import java.util.HashMap;
 
@@ -37,20 +39,24 @@ public class MainActivity extends AppCompatActivity {
     private final static int ID_ACTIVE_USER = 3;
     private final static int ID_ACCOUNT = 4;
     private String userType = null;
-    SessionManager sessionManager;
+    private String api_key,user_id;
+    private SessionManager sessionManager;
+    private UserViewModel userViewModel;
     private ImageView imgMenu;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(R.style.LightTheme);
         setContentView(R.layout.activity_main);
         imgMenu = findViewById(R.id.img_menu);
 
+        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         sessionManager =  new SessionManager(this);
         HashMap<String,String> userInfo=sessionManager.get_user();
         userType = userInfo.get(SessionManager.USER_TYPE);
+        user_id = userInfo.get(SessionManager.USER_ID);
+        api_key = userInfo.get(SessionManager.API_KEY);
 
         MeowBottomNavigation bottomNavigation = findViewById(R.id.bottomNavigation);
         //head start
@@ -197,6 +203,9 @@ public class MainActivity extends AppCompatActivity {
 
         popup.show();
     }
+    private void isOnline(String status){
+        userViewModel.isOnline("Bearer " + api_key,user_id,status);
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -215,4 +224,5 @@ public class MainActivity extends AppCompatActivity {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
 }

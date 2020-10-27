@@ -43,4 +43,7 @@ public class UserViewModel extends ViewModel {
     public void updateDeviceId(DeviceReg deviceReg) {
         repository.updateDeviceId(deviceReg);
     }
+    public void isOnline(String token,String user_id,String status) {
+        repository.isOnline(token,user_id,status);
+    }
 }

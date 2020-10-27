@@ -12,30 +12,29 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.bumptech.glide.Glide;
 import com.team15.webchat.Adapters.ActiveListAdapter;
-import com.team15.webchat.FCM.Config;
+import com.team15.webchat.Adapters.PaginationScrollListener;
+import com.team15.webchat.App.Config;
 import com.team15.webchat.Model.ActiveUser;
 import com.team15.webchat.Model.ActiveUserList;
-import com.team15.webchat.Model.User;
 import com.team15.webchat.R;
 import com.team15.webchat.Session.SessionManager;
 import com.team15.webchat.ViewModel.ChatViewModel;
-import com.team15.webchat.ViewModel.UserViewModel;
 
 import java.util.HashMap;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class ActiveListFragment extends Fragment {
     ChatViewModel chatViewModel;
     private SessionManager sessionManager;
     private RecyclerView recyclerActiveUser;
     private ActiveListAdapter activeListAdapter;
-    String api;
+    private String api;
+    private static final int PAGE_START = 1;
+    private boolean isLoading = false;
+    private boolean isLastPage = false;
+    private int TOTAL_PAGES;
+    private int currentPage = PAGE_START;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,24 +50,55 @@ public class ActiveListFragment extends Fragment {
         chatViewModel = ViewModelProviders.of(getActivity()).get(ChatViewModel.class);
         sessionManager = new SessionManager(getActivity());
         HashMap<String, String> userInfo = sessionManager.get_user();
-        final String userId = userInfo.get(SessionManager.USER_ID);
         api = userInfo.get(SessionManager.API_KEY);
 
+        recyclerActiveUser.addOnScrollListener(new PaginationScrollListener(linearLayoutManager) {
+            @Override
+            protected void loadMoreItems() {
+                isLoading = true;
+                currentPage += 1;
+                loadNextPage();
+            }
+
+            @Override
+            public boolean isLastPage() {
+                return isLastPage;
+            }
+
+            @Override
+            public boolean isLoading() {
+                return isLoading;
+            }
+        });
 
         loadFirstPage();
         return view;
     }
 
-    private void loadFirstPage() {
+    private void loadNextPage() {
+        chatViewModel.activeUser("Bearer " + api, Config.APP_ID, String.valueOf(currentPage)).observe(getActivity(), new Observer<ActiveUser>() {
+            @Override
+            public void onChanged(ActiveUser activeUser) {
+                activeListAdapter.removeLoadingFooter();
+                isLoading = false;
+                List<ActiveUserList> results = activeUser.getData();
+                activeListAdapter.addAll(results);
+                if (currentPage != TOTAL_PAGES) activeListAdapter.addLoadingFooter();
+                else isLastPage = true;
+            }
+        });
+    }
 
-        chatViewModel.activeUser("Bearer " + api, Config.APP_ID).observe(getActivity(), new Observer<ActiveUser>() {
+    private void loadFirstPage() {
+        chatViewModel.activeUser("Bearer " + api, Config.APP_ID, String.valueOf(currentPage)).observe(getActivity(), new Observer<ActiveUser>() {
             @Override
             public void onChanged(ActiveUser activeUser) {
                 List<ActiveUserList> results = activeUser.getData();
                 activeListAdapter.addAll(results);
+                TOTAL_PAGES = activeUser.getLastPage();
 
-//                if (currentPage <= TOTAL_PAGES) paginationAdapter.addLoadingFooter();
-//                else isLastPage = true;
+                if (currentPage <= TOTAL_PAGES) activeListAdapter.addLoadingFooter();
+                else isLastPage = true;
             }
         });
 

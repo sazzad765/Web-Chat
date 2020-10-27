@@ -1,6 +1,7 @@
 package com.team15.webchat.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.team15.webchat.ChatActivity;
 import com.team15.webchat.Model.ActiveUserList;
 import com.team15.webchat.R;
 
@@ -59,18 +61,28 @@ public class ActiveListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
-        ActiveUserList activeUserList = userList.get(position);
+        final ActiveUserList activeUserList = userList.get(position);
         switch (getItemViewType(position)) {
             case ITEM:
                 UserViewHolder userViewHolder = (UserViewHolder) holder;
                 userViewHolder.txtName.setText(activeUserList.getName());
                 Glide.with(context).load(activeUserList.getImage()).apply(RequestOptions.centerCropTransform()).into(userViewHolder.profileImage);
-                if (activeUserList.getActiveStatus()==0){
-                    userViewHolder.active_status.setImageResource(R.color.inactive);
-                }else {
+                if (activeUserList.getActiveStatus()==1){
                     userViewHolder.active_status.setImageResource(R.color.active);
+                }else {
+                    userViewHolder.active_status.setImageResource(R.color.inactive);
                 }
+                userViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(context, ChatActivity.class);
+                        intent.putExtra("receiverId", activeUserList.getUserId().toString());
+                        intent.putExtra("profileImg", activeUserList.getImage());
+                        intent.putExtra("name", activeUserList.getName());
+                        context.startActivity(intent);
 
+                    }
+                });
                 break;
 
             case LOADING:
@@ -95,17 +107,17 @@ public class ActiveListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         add(new ActiveUserList());
     }
 
-//    public void removeLoadingFooter() {
-//        isLoadingAdded = false;
-//
-//        int position = movieList.size() - 1;
-//        ActiveUserList result = getItem(position);
-//
-//        if (result != null) {
-//            movieList.remove(position);
-//            notifyItemRemoved(position);
-//        }
-//    }
+    public void removeLoadingFooter() {
+        isLoadingAdded = false;
+
+        int position = userList.size() - 1;
+        ActiveUserList result = getItem(position);
+
+        if (result != null) {
+            userList.remove(position);
+            notifyItemRemoved(position);
+        }
+    }
 
     public void add(ActiveUserList movie) {
         userList.add(movie);

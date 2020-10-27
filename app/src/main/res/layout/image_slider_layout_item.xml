@@ -11,15 +11,6 @@
         android:layout_height="match_parent"
         android:scaleType="fitXY" />
 
-
-    <ImageView
-        android:id="@+id/iv_gif_container"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_gravity="bottom|start"
-        android:layout_margin="50dp" />
-
-
     <FrameLayout
         android:id="@+id/fl_shadow_container"
         android:background="@drawable/bg_overlay"

@@ -24,19 +24,6 @@
             android:layout_alignParentTop="true"
             android:layout_marginTop="0dp"
             tools:listitem="@layout/chat_list_row" />
-<!--        <include-->
-<!--            android:id="@+id/fff"-->
-<!--            layout="@layout/active_list_row"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_alignParentTop="true"-->
-<!--            android:layout_marginTop="10dp" />-->
-<!--        <include-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_below="@+id/fff"-->
-<!--            layout="@layout/active_list_row"/>-->
-
     </RelativeLayout>
 
 </FrameLayout>

@@ -10,6 +10,9 @@ public class LoginInfo {
     @SerializedName("token_type")
     @Expose
     private String tokenType;
+    @SerializedName("seller_id")
+    @Expose
+    private Integer sellerId;
     @SerializedName("user_id")
     @Expose
     private Integer userId;
@@ -31,6 +34,14 @@ public class LoginInfo {
 
     public void setTokenType(String tokenType) {
         this.tokenType = tokenType;
+    }
+
+    public Integer getSellerId() {
+        return sellerId;
+    }
+
+    public void setSellerId(Integer sellerId) {
+        this.sellerId = sellerId;
     }
 
     public Integer getUserId() {

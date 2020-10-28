@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.team15.webchat.App.Config;
 import com.team15.webchat.Fragment.ActiveListFragment;
 import com.team15.webchat.Fragment.ChatListFragment;
@@ -29,10 +30,10 @@ import com.team15.webchat.Heads.HeadViewService;
 import com.team15.webchat.Session.SessionManager;
 import com.team15.webchat.ViewModel.UserViewModel;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
-    private static final int CODE_DRAW_OVER_OTHER_APP_PERMISSION = 2084;
 
     private final static int ID_HOME = 1;
     private final static int ID_CHAT = 2;
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                     Uri.parse("package:" + getPackageName()));
-            startActivityForResult(intent, CODE_DRAW_OVER_OTHER_APP_PERMISSION);
+            startActivityForResult(intent, Config.CODE_DRAW_OVER_OTHER_APP_PERMISSION);
         }
         //end
         imgMenu.setOnClickListener(new View.OnClickListener() {
@@ -142,39 +143,31 @@ public class MainActivity extends AppCompatActivity {
         };
 
     }
-
     private void loadFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.frame_container, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }
-
-    private void initializeView() {
-
-        startService(new Intent(MainActivity.this, HeadViewService.class));
-        finish();
-
-    }
     @Override
     protected void onResume() {
         super.onResume();
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(Config.PUSH_NOTIFICATION));
-
+        isOnline("1");
 //        NotificationUtils.clearNotifications();
     }
 
     @Override
     protected void onPause() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        isOnline("0");
         super.onPause();
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-//        initializeView();
     }
 
     private void menuClick(View v) {
@@ -185,7 +178,13 @@ public class MainActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.logout:
+                        isOnline("1");
                         sessionManager.logout();
+                        try {
+                            FirebaseInstanceId.getInstance().deleteInstanceId();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         startActivity(new Intent(MainActivity.this, LoginActivity.class).
                                 setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
                         finish();
@@ -209,16 +208,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CODE_DRAW_OVER_OTHER_APP_PERMISSION) {
-
+        if (requestCode == Config.CODE_DRAW_OVER_OTHER_APP_PERMISSION) {
             if (Settings.canDrawOverlays(this)) {
-//                initializeView();
+
             } else {
                 Toast.makeText(this,
                         "Draw over other app permission not available. Closing the application",
                         Toast.LENGTH_SHORT).show();
-
-                finish();
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);

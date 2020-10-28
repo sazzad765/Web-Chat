@@ -1,5 +1,6 @@
 package com.team15.webchat.Fragment;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -22,12 +23,12 @@ import com.smarteist.autoimageslider.IndicatorView.draw.controller.DrawControlle
 import com.smarteist.autoimageslider.SliderAnimations;
 import com.smarteist.autoimageslider.SliderView;
 import com.team15.webchat.Adapters.SliderAdapter;
+import com.team15.webchat.ChatActivity;
 import com.team15.webchat.Model.Banner;
 import com.team15.webchat.Model.User;
 import com.team15.webchat.R;
 import com.team15.webchat.Session.SessionManager;
 import com.team15.webchat.ViewModel.AppViewModel;
-import com.team15.webchat.ViewModel.UserViewModel;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +37,6 @@ public class HomeFragment extends Fragment {
     private SliderView sliderView;
     private SliderAdapter adapter;
     private AppViewModel appViewModel;
-    private UserViewModel userViewModel;
     private SessionManager sessionManager;
     private ImageView imgSeller;
     private TextView txtSellerName;
@@ -47,7 +47,7 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
@@ -61,8 +61,9 @@ public class HomeFragment extends Fragment {
         HashMap<String, String> userInfo = sessionManager.get_user();
         final String sellerId = userInfo.get(SessionManager.SELLER_ID);
         String api = userInfo.get(SessionManager.API_KEY);
+        String userId = userInfo.get(SessionManager.USER_ID);
 
-        adapter = new SliderAdapter(getActivity());
+        adapter = new SliderAdapter(getActivity(), sellerId);
         sliderView.setSliderAdapter(adapter);
         sliderView.setIndicatorAnimation(IndicatorAnimationType.WORM);
         sliderView.setSliderTransformAnimation(SliderAnimations.SIMPLETRANSFORMATION);
@@ -80,6 +81,14 @@ public class HomeFragment extends Fragment {
                 Log.i("GGG", "onIndicatorClicked: " + sliderView.getCurrentPagePosition());
             }
         });
+        btnWrite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), ChatActivity.class);
+                intent.putExtra("receiverId",sellerId);
+                startActivity(intent);
+            }
+        });
 
         slider();
         setSellerProfile(api, sellerId);
@@ -87,9 +96,9 @@ public class HomeFragment extends Fragment {
     }
 
     private void setSellerProfile(String api, String sellerId) {
-        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        appViewModel = ViewModelProviders.of(this).get(AppViewModel.class);
 
-        userViewModel.getUser("Bearer " + api, sellerId).observe(this, new Observer<User>() {
+        appViewModel.getSeller("Bearer " + api, sellerId).observe(getActivity(), new Observer<User>() {
             @Override
             public void onChanged(User user) {
                 txtSellerName.setText(user.getName());

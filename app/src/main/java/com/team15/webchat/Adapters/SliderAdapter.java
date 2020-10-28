@@ -1,6 +1,7 @@
 package com.team15.webchat.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.smarteist.autoimageslider.SliderViewAdapter;
+import com.team15.webchat.ChatActivity;
 import com.team15.webchat.Model.Banner;
 import com.team15.webchat.Model.SliderItem;
 import com.team15.webchat.R;
@@ -21,9 +23,11 @@ import java.util.List;
 public class SliderAdapter extends SliderViewAdapter<SliderAdapter.SliderAdapterVH> {
     private Context context;
     private List<Banner> mSliderItems = new ArrayList<>();
+    String sellerId;
 
-    public SliderAdapter(Context context) {
+    public SliderAdapter(Context context, String sellerId) {
         this.context = context;
+        this.sellerId = sellerId;
     }
 
     public void renewItems(List<Banner> sliderItems) {
@@ -45,13 +49,18 @@ public class SliderAdapter extends SliderViewAdapter<SliderAdapter.SliderAdapter
         viewHolder.textViewDescription.setText(sliderItem.getTitle());
         viewHolder.textViewDescription.setTextSize(16);
         viewHolder.textViewDescription.setTextColor(Color.WHITE);
-        String url =sliderItem.getUrl()+""+sliderItem.getLogo();
+        final String url = sliderItem.getUrl() + "" + sliderItem.getLogo();
         Glide.with(context).load(url).into(viewHolder.imageViewBackground);
 
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(context, "This is item in position " + position, Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(context, ChatActivity.class);
+                intent.putExtra("receiverId", sellerId);
+                intent.putExtra("message",url);
+                context.startActivity(intent);
             }
         });
     }

@@ -97,7 +97,7 @@ public class ActiveListFragment extends Fragment {
                 activeListAdapter.addAll(results);
                 TOTAL_PAGES = activeUser.getLastPage();
 
-                if (currentPage <= TOTAL_PAGES) activeListAdapter.addLoadingFooter();
+                if (currentPage < TOTAL_PAGES) activeListAdapter.addLoadingFooter();
                 else isLastPage = true;
             }
         });

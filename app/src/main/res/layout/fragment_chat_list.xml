@@ -17,23 +17,13 @@
 <!--            android:background="@drawable/login_edit_text"-->
 <!--            android:hint="Search..." />-->
 
-<!--        <androidx.recyclerview.widget.RecyclerView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:layout_below="@+id/search_list"-->
-<!--            tools:listitem="@layout/chat_list_row" />-->
-        <include
-            android:id="@+id/fff"
-            layout="@layout/chat_list_row"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerChatList"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_alignParentTop="true"
-            android:layout_marginTop="10dp" />
-        <include
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/fff"
-            layout="@layout/chat_list_row"/>
+            android:layout_marginTop="0dp"
+            tools:listitem="@layout/chat_list_row" />
 
     </RelativeLayout>
 

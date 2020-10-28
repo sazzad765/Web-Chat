@@ -25,6 +25,7 @@ import com.team15.webchat.ViewModel.UserViewModel;
 
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -77,7 +78,7 @@ public class ProfileFragment extends Fragment {
                 txtName1.setText(user.getName());
                 txtPhone.setText(user.getPhone());
                 Glide
-                        .with(getActivity())
+                        .with(Objects.requireNonNull(getActivity()))
                         .load(user.getImage())
                         .centerCrop()
                         .placeholder(R.drawable.ic_launcher_foreground)

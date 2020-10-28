@@ -4,17 +4,22 @@ import com.google.gson.JsonObject;
 import com.team15.webchat.Model.ActiveUser;
 import com.team15.webchat.Model.ApiResponse;
 import com.team15.webchat.Model.Banner;
+import com.team15.webchat.Model.ChatListPaging;
 import com.team15.webchat.Model.ChatPag;
 import com.team15.webchat.Model.Login;
 import com.team15.webchat.Model.User;
 
 import java.util.List;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.Header;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 
 public interface APIInterface {
 
@@ -69,6 +74,15 @@ public interface APIInterface {
     );
 
     @FormUrlEncoded
+    @POST("auth/chat_list")
+    Call<ChatListPaging> chatList(
+            @Header("Authorization") String token,
+            @Field("user_id") String user_id,
+            @Field("app_id") String app_id,
+            @Field("page") String currentPage
+    );
+
+    @FormUrlEncoded
     @POST("auth/active_users")
     Call<ActiveUser> activeUser(
             @Header("Authorization") String token,
@@ -109,6 +123,15 @@ public interface APIInterface {
             @Field("user_id") String user_id,
             @Field("status") String status
     );
+
+
+    @Multipart
+    @POST("retrofit_example/upload_image.php")
+    Call uploadFile(@Part MultipartBody.Part file,
+                    @Part("file") RequestBody name,
+                    @Field("user_id") String user_id
+    );
+
 
 
 }

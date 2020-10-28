@@ -5,6 +5,7 @@ import com.team15.webchat.Api.APIClient;
 import com.team15.webchat.Api.APIInterface;
 import com.team15.webchat.App.Config;
 import com.team15.webchat.Model.Banner;
+import com.team15.webchat.Model.User;
 
 import java.util.List;
 import java.util.Observable;
@@ -16,7 +17,7 @@ import retrofit2.Response;
 public class AppRepository extends Observable {
     private APIInterface apiInterface;
     private static AppRepository appRepository;
-
+    final MutableLiveData<User> userProfile = new MutableLiveData<>();
     public static AppRepository getInstance() {
         if (appRepository == null) {
             appRepository = new AppRepository();
@@ -52,6 +53,22 @@ public class AppRepository extends Observable {
             }
         });
         return data;
+    }
+    public LiveData<User> getSeller(String token, String userId){
+
+        Call<User> call2 = apiInterface.getUser(token,userId);
+        call2.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                userProfile.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                call.cancel();
+            }
+        });
+        return userProfile;
     }
 
 

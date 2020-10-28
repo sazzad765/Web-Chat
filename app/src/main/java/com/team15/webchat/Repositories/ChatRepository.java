@@ -10,6 +10,7 @@ import com.team15.webchat.Api.APIClient;
 import com.team15.webchat.Api.APIInterface;
 import com.team15.webchat.App.Config;
 import com.team15.webchat.Model.ActiveUser;
+import com.team15.webchat.Model.ChatListPaging;
 import com.team15.webchat.Model.ChatPag;
 
 import java.util.ArrayList;
@@ -62,6 +63,23 @@ public class ChatRepository extends Observable {
         });
         return data;
     }
+
+    public LiveData<ChatListPaging> getChatList(String token, String user_id, String currentPage){
+        final MutableLiveData<ChatListPaging> data = new MutableLiveData<>();
+        Call<ChatListPaging> call2 = apiInterface.chatList(token,user_id,Config.APP_ID,currentPage);
+        call2.enqueue(new Callback<ChatListPaging>() {
+            @Override
+            public void onResponse(Call<ChatListPaging> call, Response<ChatListPaging> response) {
+                data.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<ChatListPaging> call, Throwable t) {
+
+            }
+        });
+        return data;
+    }
     public LiveData<ChatPag> messageData(String token, String sender_id, String receiver_id, String appId){
         final MutableLiveData<ChatPag> chatData = new MutableLiveData<>();
         Call<ChatPag> call2 = apiInterface.messageData(token,sender_id,receiver_id,appId);
@@ -104,5 +122,6 @@ public class ChatRepository extends Observable {
             });
             return null;
         }
+
     }
 }

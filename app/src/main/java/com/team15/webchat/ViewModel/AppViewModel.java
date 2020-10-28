@@ -3,6 +3,7 @@ package com.team15.webchat.ViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 import com.team15.webchat.Model.Banner;
+import com.team15.webchat.Model.User;
 import com.team15.webchat.Repositories.AppRepository;
 
 
@@ -11,6 +12,7 @@ import java.util.List;
 public class AppViewModel extends ViewModel {
     private AppRepository repository;
     LiveData<List< Banner >> data;
+    private LiveData<User> getUser;
     public AppViewModel() {
         super();
         repository = AppRepository.getInstance();
@@ -20,6 +22,10 @@ public class AppViewModel extends ViewModel {
     public LiveData<List<Banner>> getBanner() {
         data = repository.getBanner();
         return data;
+    }
+    public LiveData<User> getSeller(String token, String userId) {
+        getUser = repository.getSeller(token,userId);
+        return getUser;
     }
 
 

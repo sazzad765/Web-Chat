@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.team15.webchat.Model.ActiveUser;
 import com.team15.webchat.Model.Chat;
+import com.team15.webchat.Model.ChatListPaging;
 import com.team15.webchat.Model.ChatPag;
 import com.team15.webchat.Model.DeviceReg;
 import com.team15.webchat.Model.User;
@@ -13,6 +14,8 @@ import com.team15.webchat.Repositories.ChatRepository;
 public class ChatViewModel extends ViewModel {
     private ChatRepository repository;
     private LiveData<User> getUser;
+    LiveData<ActiveUser> data;
+    LiveData<ChatListPaging>pagingLiveData;
 
     public ChatViewModel() {
         super();
@@ -21,9 +24,13 @@ public class ChatViewModel extends ViewModel {
     }
 
     public LiveData<ActiveUser> activeUser(String token, String appId,String currentPage) {
-        LiveData<ActiveUser> data;
         data = repository.activeUser(token, appId,currentPage);
         return data;
+    }
+
+    public LiveData<ChatListPaging> getChatList(String token, String user_id, String currentPage) {
+        pagingLiveData = repository.getChatList(token, user_id,currentPage);
+        return pagingLiveData;
     }
 
     public LiveData<ChatPag> messageData(String token, String sender_id, String receiver_id, String appId) {

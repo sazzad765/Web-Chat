@@ -40,6 +40,12 @@ public class UserViewModel extends ViewModel {
         return apiResponse;
     }
 
+    public LiveData<ApiResponse> updateRef(String token,String userId,String refId) {
+        LiveData<ApiResponse> apiResponse;
+        apiResponse = repository.updateRef(token,userId,refId);
+        return apiResponse;
+    }
+
     public void updateDeviceId(DeviceReg deviceReg) {
         repository.updateDeviceId(deviceReg);
     }

@@ -24,6 +24,7 @@ import retrofit2.Response;
 public class ChatRepository extends Observable {
     private APIInterface apiInterface;
     private static ChatRepository chatRepository;
+     MutableLiveData<ChatListPaging> chatListData = new MutableLiveData<>();
 
     public static ChatRepository getInstance() {
         if (chatRepository == null) {
@@ -45,6 +46,13 @@ public class ChatRepository extends Observable {
         list.add(type);
         new SendMessageAsyncTask(apiInterface).execute(list);
     }
+    public void seenMessage(String token ,String senderId,String receiverId) {
+        ArrayList<String> list=new ArrayList<String>();
+        list.add(token);
+        list.add(senderId);
+        list.add(receiverId);
+        new SeenAsyncTask(apiInterface).execute(list);
+    }
 
 
     public LiveData<ActiveUser> activeUser(String token, String appId,String currentPage){
@@ -65,12 +73,12 @@ public class ChatRepository extends Observable {
     }
 
     public LiveData<ChatListPaging> getChatList(String token, String user_id, String currentPage){
-        final MutableLiveData<ChatListPaging> data = new MutableLiveData<>();
+//        final MutableLiveData<ChatListPaging> data = new MutableLiveData<>();
         Call<ChatListPaging> call2 = apiInterface.chatList(token,user_id,Config.APP_ID,currentPage);
         call2.enqueue(new Callback<ChatListPaging>() {
             @Override
             public void onResponse(Call<ChatListPaging> call, Response<ChatListPaging> response) {
-                data.postValue(response.body());
+                chatListData.postValue(response.body());
             }
 
             @Override
@@ -78,7 +86,7 @@ public class ChatRepository extends Observable {
 
             }
         });
-        return data;
+        return chatListData;
     }
     public LiveData<ChatPag> messageData(String token, String sender_id, String receiver_id, String appId){
         final MutableLiveData<ChatPag> chatData = new MutableLiveData<>();
@@ -104,7 +112,6 @@ public class ChatRepository extends Observable {
             this.apiInterface = apiInterface;
         }
 
-
         @Override
         protected Void doInBackground(List... lists) {
             Call<JsonObject> call = apiInterface.sendMessage(
@@ -122,6 +129,32 @@ public class ChatRepository extends Observable {
             });
             return null;
         }
+    }
+    private static class SeenAsyncTask extends AsyncTask<List, Void,Void> {
+        private final APIInterface apiInterface;
+        private SeenAsyncTask(APIInterface apiInterface) {
+            this.apiInterface = apiInterface;
+        }
+
+
+        @Override
+        protected Void doInBackground(List... lists) {
+            Call<JsonObject> call = apiInterface.isSeen(
+                    lists[0].get(0).toString(),lists[0].get(1).toString(),lists[0].get(2).toString(),Config.APP_ID);
+            call.enqueue(new Callback<JsonObject>() {
+                @Override
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+
+                }
+
+                @Override
+                public void onFailure(Call<JsonObject> call, Throwable t) {
+
+                }
+            });
+            return null;
+        }
 
     }
+
 }

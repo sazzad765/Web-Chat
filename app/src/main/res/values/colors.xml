@@ -5,11 +5,15 @@
     <color name="colorAccent">#535252</color>
     <color name="white">#FFFFFF</color>
 
-    <color name="login_background_top">#78C593</color>
-    <color name="login_background_bottom">#5A9C86</color>
-    <color name="button_background">#91FF8A</color>
+    <color name="login_background_top">#037AD1</color>
+    <color name="login_background_bottom">#125485</color>
+    <color name="button_background">#466D8A</color>
 
     <color name="chat_edit_text">#303030</color>
     <color name="active">#61D366</color>
     <color name="inactive">#A4A5A4</color>
+
+    <color name="login_reg_card">#466D8A</color>
+    <color name="logo_color">#08385C</color>
+    <color name="chat_right">#176097</color>
 </resources>

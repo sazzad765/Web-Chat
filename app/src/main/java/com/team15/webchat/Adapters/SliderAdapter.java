@@ -43,26 +43,25 @@ public class SliderAdapter extends SliderViewAdapter<SliderAdapter.SliderAdapter
 
     @Override
     public void onBindViewHolder(SliderAdapterVH viewHolder, final int position) {
-
         Banner sliderItem = mSliderItems.get(position);
 
-        viewHolder.textViewDescription.setText(sliderItem.getTitle());
+//        viewHolder.textViewDescription.setText(sliderItem.getTitle());
         viewHolder.textViewDescription.setTextSize(16);
         viewHolder.textViewDescription.setTextColor(Color.WHITE);
-        final String url = sliderItem.getUrl() + "" + sliderItem.getLogo();
+//        "http://post.freedownloadimage.com/" +
+        final String url =  sliderItem.getSlider();
         Glide.with(context).load(url).into(viewHolder.imageViewBackground);
-
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(context, "This is item in position " + position, Toast.LENGTH_SHORT).show();
-
-                Intent intent = new Intent(context, ChatActivity.class);
-                intent.putExtra("receiverId", sellerId);
-                intent.putExtra("message",url);
-                context.startActivity(intent);
-            }
-        });
+//        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Toast.makeText(context, "This is item in position " + position, Toast.LENGTH_SHORT).show();
+//
+//                Intent intent = new Intent(context, ChatActivity.class);
+//                intent.putExtra("receiverId", sellerId);
+//                intent.putExtra("message",url);
+//                context.startActivity(intent);
+//            }
+//        });
     }
 
     @Override
@@ -70,7 +69,7 @@ public class SliderAdapter extends SliderViewAdapter<SliderAdapter.SliderAdapter
         return mSliderItems.size();
     }
 
-    class SliderAdapterVH extends SliderViewAdapter.ViewHolder {
+    class SliderAdapterVH extends SliderViewAdapter.ViewHolder{
 
         View itemView;
         ImageView imageViewBackground;
@@ -83,5 +82,4 @@ public class SliderAdapter extends SliderViewAdapter<SliderAdapter.SliderAdapter
             this.itemView = itemView;
         }
     }
-
 }

@@ -6,9 +6,14 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Vibrator;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,11 +26,14 @@ import com.team15.webchat.ViewModel.UserViewModel;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     private EditText editTextPhone, editTextPassword;
     private Button btnLogin;
-    private TextView btnRegistration;
+    private TextView btnRegistration, txtWarning;
     private UserViewModel userViewModel;
+    private ProgressBar loginProgressBar;
+    private ImageView imgShowPass;
     SessionManager sessionManager;
     DeviceReg deviceReg;
     String token;
+    Vibrator vibrator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,14 +44,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         editTextPassword = findViewById(R.id.editTextPassword);
         btnLogin = findViewById(R.id.btnLogin);
         btnRegistration = findViewById(R.id.btnRegistration);
+        loginProgressBar = findViewById(R.id.loginProgressBar);
+        txtWarning = findViewById(R.id.txtWarning);
+        imgShowPass = findViewById(R.id.imgShowPass);
+
+        vibrator = (Vibrator) getSystemService(MainActivity.VIBRATOR_SERVICE);
         sessionManager = new SessionManager(this);
         token = FirebaseInstanceId.getInstance().getToken();
 
         btnLogin.setOnClickListener(this);
         btnRegistration.setOnClickListener(this);
+        imgShowPass.setOnClickListener(this);
     }
 
     private void submitForm() {
+        txtWarning.setVisibility(View.GONE);
         final String phone = editTextPhone.getText().toString().trim();
         final String password = editTextPassword.getText().toString().trim();
         if (phone.length() == 0) {
@@ -56,14 +71,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             return;
         }
 
-
+        loginProgressBar.setVisibility(View.VISIBLE);
         userViewModel.getLogin(phone, password).observe(this, new Observer<Login>() {
             @Override
             public void onChanged(Login response) {
+                loginProgressBar.setVisibility(View.INVISIBLE);
                 int success = response.getSuccess();
                 String message = response.getMessage();
                 Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
                 if (success == 1) {
+                    txtWarning.setVisibility(View.GONE);
                     String api_key = response.getLoginInfo().get(0).getApiToken();
                     String key_Type = response.getLoginInfo().get(0).getTokenType();
                     String user_id = response.getLoginInfo().get(0).getUserId().toString();
@@ -76,6 +93,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();
+                } else {
+                    vibrator.vibrate(200);
+                    txtWarning.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -85,10 +105,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         if (v == btnLogin) {
             submitForm();
-//            startActivity(new Intent(this,MainActivity.class));
         } else if (v == btnRegistration) {
             Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
             startActivity(intent);
+        } else if (v == imgShowPass) {
+            if(editTextPassword.getTransformationMethod().equals(PasswordTransformationMethod.getInstance())){
+                editTextPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+            }
+            else{
+                editTextPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            }
         }
     }
 

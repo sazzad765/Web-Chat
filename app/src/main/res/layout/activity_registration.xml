@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
-            android:text="Here's Your First Step With Us"
+            android:text="@string/reg_welcome_note"
             android:textColor="@color/white"
             android:textSize="35sp"
             android:textStyle="bold"
@@ -37,6 +37,7 @@
             app:layout_constraintTop_toTopOf="@+id/imageView2" />
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
@@ -85,7 +86,6 @@
                     android:background="@drawable/login_edit_text"
                     android:ems="10"
                     android:hint="enter password"
-                    android:inputType="textPassword"
                     android:theme="@style/login_editText" />
 
                 <Button
@@ -100,6 +100,17 @@
                     android:textColor="@color/white" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
+
+        <ProgressBar
+            android:id="@+id/regProgressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/cardView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView18" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

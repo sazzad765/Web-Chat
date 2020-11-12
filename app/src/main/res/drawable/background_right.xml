@@ -6,6 +6,9 @@
         android:radius="10dp"
         android:topRightRadius="0dp"/>
 
-    <solid android:color="@color/colorPrimary"/>
+<!--    <gradient-->
+<!--        android:startColor="@color/login_background_top"-->
+<!--        android:endColor="@color/login_background_bottom"/>-->
+    <solid android:color="@color/chat_right"/>
 
 </shape>

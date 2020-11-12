@@ -1,8 +1,6 @@
 <resources>
     <string name="app_name">Web Chat</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="login_text">Text messaging, or texting, is the act of composing and sending electronic messages</string>
+    <string name="login_text">A sister concern of hello gaming</string>
 
     <string name="err_tel">enter valid phone Number</string>
     <string name="err_password">enter valid password</string>
@@ -10,6 +8,11 @@
     <string name="enter_password">enter password</string>
     <string name="login">Login</string>
     <string name="new_user_registration_now">New User? Registration Now</string>
-    <string name="welcome">Welcome to Chat App</string>
+    <string name="welcome">Gaming world</string>
     <string name="developed">Developed by Sazzad</string>
+    <string name="write_now">মেসেজ করুন</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="wrong_login">Wrong! check phone and password</string>
+    <string name="reg_welcome_note">Welcome To Gaming World</string>
 </resources>

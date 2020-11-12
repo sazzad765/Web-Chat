@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.team15.webchat.Adapters.ActiveListAdapter;
 import com.team15.webchat.Adapters.PaginationScrollListener;
@@ -21,6 +22,7 @@ import com.team15.webchat.R;
 import com.team15.webchat.Session.SessionManager;
 import com.team15.webchat.ViewModel.ChatViewModel;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -28,6 +30,7 @@ public class ActiveListFragment extends Fragment {
     ChatViewModel chatViewModel;
     private SessionManager sessionManager;
     private RecyclerView recyclerActiveUser;
+    private ProgressBar activeListProgressBar;
     private ActiveListAdapter activeListAdapter;
     private String api;
     private static final int PAGE_START = 1;
@@ -35,15 +38,17 @@ public class ActiveListFragment extends Fragment {
     private boolean isLastPage = false;
     private int TOTAL_PAGES;
     private int currentPage = PAGE_START;
+    List<ActiveUserList> results = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_active_list, container, false);
         recyclerActiveUser = view.findViewById(R.id.recyclerActiveUser);
+        activeListProgressBar = view.findViewById(R.id.activeListProgressBar);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        activeListAdapter = new ActiveListAdapter(getActivity());
+        activeListAdapter = new ActiveListAdapter(getActivity(),results);
         recyclerActiveUser.setLayoutManager(linearLayoutManager);
         recyclerActiveUser.setAdapter(activeListAdapter);
 
@@ -59,7 +64,6 @@ public class ActiveListFragment extends Fragment {
                 currentPage += 1;
                 loadNextPage();
             }
-
             @Override
             public boolean isLastPage() {
                 return isLastPage;
@@ -70,8 +74,6 @@ public class ActiveListFragment extends Fragment {
                 return isLoading;
             }
         });
-
-        loadFirstPage();
         return view;
     }
 
@@ -81,8 +83,12 @@ public class ActiveListFragment extends Fragment {
             public void onChanged(ActiveUser activeUser) {
                 activeListAdapter.removeLoadingFooter();
                 isLoading = false;
-                List<ActiveUserList> results = activeUser.getData();
-                activeListAdapter.addAll(results);
+                if (activeUser.getTotal() > 0) {
+                    for (int i = 0; i < activeUser.getData().size(); i++) {
+                        results.add(activeUser.getData().get(i));
+                    }
+                    activeListAdapter.notifyDataSetChanged();
+                }
                 if (currentPage != TOTAL_PAGES) activeListAdapter.addLoadingFooter();
                 else isLastPage = true;
             }
@@ -90,18 +96,28 @@ public class ActiveListFragment extends Fragment {
     }
 
     private void loadFirstPage() {
+        activeListProgressBar.setVisibility(View.VISIBLE);
+        results.clear();
         chatViewModel.activeUser("Bearer " + api, Config.APP_ID, String.valueOf(currentPage)).observe(getActivity(), new Observer<ActiveUser>() {
             @Override
             public void onChanged(ActiveUser activeUser) {
-                List<ActiveUserList> results = activeUser.getData();
-                activeListAdapter.addAll(results);
+                activeListProgressBar.setVisibility(View.INVISIBLE);
                 TOTAL_PAGES = activeUser.getLastPage();
-
+                if (activeUser.getTotal() > 0) {
+                    for (int i = 0; i < activeUser.getData().size(); i++) {
+                       results.add(activeUser.getData().get(i));
+                    }
+                    activeListAdapter.notifyDataSetChanged();
+                }
                 if (currentPage < TOTAL_PAGES) activeListAdapter.addLoadingFooter();
                 else isLastPage = true;
             }
         });
-
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadFirstPage();
+    }
 }

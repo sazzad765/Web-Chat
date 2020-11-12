@@ -5,8 +5,8 @@
         />
     <gradient
         android:angle="45"
-        android:startColor="@color/button_background"
-        android:endColor="@color/login_background_top"
+        android:startColor="@color/login_background_top"
+        android:endColor="@color/login_background_bottom"
         android:type="linear"
         />
     <padding

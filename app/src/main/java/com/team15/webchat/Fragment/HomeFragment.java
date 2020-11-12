@@ -1,46 +1,68 @@
 package com.team15.webchat.Fragment;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.gson.JsonObject;
 import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType;
 import com.smarteist.autoimageslider.IndicatorView.draw.controller.DrawController;
 import com.smarteist.autoimageslider.SliderAnimations;
 import com.smarteist.autoimageslider.SliderView;
 import com.team15.webchat.Adapters.SliderAdapter;
+import com.team15.webchat.App.Config;
 import com.team15.webchat.ChatActivity;
+import com.team15.webchat.LoginActivity;
+import com.team15.webchat.MainActivity;
 import com.team15.webchat.Model.Banner;
 import com.team15.webchat.Model.User;
 import com.team15.webchat.R;
 import com.team15.webchat.Session.SessionManager;
 import com.team15.webchat.ViewModel.AppViewModel;
+import com.team15.webchat.ViewModel.UserViewModel;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
-    private SliderView sliderView;
+    private SliderView sliderView,imageSliderSmall;
     private SliderAdapter adapter;
     private AppViewModel appViewModel;
+    private UserViewModel userViewModel;
     private SessionManager sessionManager;
     private ImageView imgSeller;
-    private TextView txtSellerName;
+    private ImageView imgMenu;
+    private TextView txtSellerName, txtCount;
     private Button btnWrite;
+    private String sellerId, userId,  api;
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
+    CardView sellerCardView;
+    private List<Banner>bannerList;
 
     public HomeFragment() {
 
@@ -50,18 +72,23 @@ public class HomeFragment extends Fragment {
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-
         appViewModel = ViewModelProviders.of(getActivity()).get(AppViewModel.class);
+        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+
         sliderView = view.findViewById(R.id.imageSlider);
+        imageSliderSmall = view.findViewById(R.id.imageSliderSmall);
         imgSeller = view.findViewById(R.id.imgSeller);
         txtSellerName = view.findViewById(R.id.txtSellerName);
         btnWrite = view.findViewById(R.id.btnWrite);
+        txtCount = view.findViewById(R.id.txtCount);
+        imgMenu = view.findViewById(R.id.img_menu);
+        sellerCardView = view.findViewById(R.id.sellerCardView);
 
         sessionManager = new SessionManager(getActivity());
         HashMap<String, String> userInfo = sessionManager.get_user();
-        final String sellerId = userInfo.get(SessionManager.SELLER_ID);
-        String api = userInfo.get(SessionManager.API_KEY);
-        String userId = userInfo.get(SessionManager.USER_ID);
+        sellerId = userInfo.get(SessionManager.SELLER_ID);
+        api = userInfo.get(SessionManager.API_KEY);
+        userId = userInfo.get(SessionManager.USER_ID);
 
         adapter = new SliderAdapter(getActivity(), sellerId);
         sliderView.setSliderAdapter(adapter);
@@ -74,35 +101,71 @@ public class HomeFragment extends Fragment {
         sliderView.setAutoCycle(true);
         sliderView.startAutoCycle();
 
+        imageSliderSmall.setSliderAdapter(adapter);
+        imageSliderSmall.setIndicatorAnimation(IndicatorAnimationType.WORM);
+        imageSliderSmall.setSliderTransformAnimation(SliderAnimations.SIMPLETRANSFORMATION);
+        imageSliderSmall.setAutoCycleDirection(SliderView.AUTO_CYCLE_DIRECTION_BACK_AND_FORTH);
+        imageSliderSmall.setIndicatorSelectedColor(Color.WHITE);
+        imageSliderSmall.setIndicatorUnselectedColor(Color.GRAY);
+        imageSliderSmall.setScrollTimeInSec(4);
+        imageSliderSmall.setAutoCycle(true);
+        imageSliderSmall.startAutoCycle();
 
-        sliderView.setOnIndicatorClickListener(new DrawController.ClickListener() {
-            @Override
-            public void onIndicatorClicked(int position) {
-                Log.i("GGG", "onIndicatorClicked: " + sliderView.getCurrentPagePosition());
-            }
-        });
+//        sliderView.setOnIndicatorClickListener(new DrawController.ClickListener() {
+//            @Override
+//            public void onIndicatorClicked(int position) {
+//                Toast.makeText(getActivity(), bannerList.get(position).getId().toString(), Toast.LENGTH_SHORT).show();
+//
+//                Log.i("GGG", "onIndicatorClicked: " + sliderView.getCurrentPagePosition());
+//            }
+//        });
         btnWrite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ChatActivity.class);
-                intent.putExtra("receiverId",sellerId);
-                startActivity(intent);
+//                Intent intent = new Intent(getActivity(), ChatActivity.class);
+//                intent.putExtra("receiverId", sellerId);
+//                startActivity(intent);
+                ((MainActivity)getActivity()).selectTab(1);
+            }
+        });
+        sellerCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)getActivity()).selectTab(1);
+//                Intent intent = new Intent(getActivity(), ChatActivity.class);
+//                intent.putExtra("receiverId", sellerId);
+//                startActivity(intent);
+            }
+        });
+        imgMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                menuClick(v);
             }
         });
 
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(Config.PUSH_NOTIFICATION)) {
+                    count();
+                }
+            }
+        };
         slider();
-        setSellerProfile(api, sellerId);
+        setSellerProfile();
+        count();
         return view;
     }
 
-    private void setSellerProfile(String api, String sellerId) {
-        appViewModel = ViewModelProviders.of(this).get(AppViewModel.class);
-
+    private void setSellerProfile() {
         appViewModel.getSeller("Bearer " + api, sellerId).observe(getActivity(), new Observer<User>() {
             @Override
             public void onChanged(User user) {
-                txtSellerName.setText(user.getName());
-                Glide.with(getActivity()).load(user.getImage()).apply(RequestOptions.centerCropTransform()).into(imgSeller);
+                if (user != null) {
+                    txtSellerName.setText(user.getName());
+                    Glide.with(getActivity()).load(user.getImage()).apply(RequestOptions.centerCropTransform()).into(imgSeller);
+                }
             }
         });
     }
@@ -111,8 +174,76 @@ public class HomeFragment extends Fragment {
         appViewModel.getBanner().observe(getActivity(), new Observer<List<Banner>>() {
             @Override
             public void onChanged(List<Banner> banners) {
+                bannerList = banners;
                 adapter.renewItems(banners);
             }
         });
     }
+
+    private void count() {
+        appViewModel.getSeenCount("Bearer " + api, userId, sellerId).observe(getActivity(), new Observer<JsonObject>() {
+            @Override
+            public void onChanged(JsonObject jsonObject) {
+                if (jsonObject!=null) {
+                    int count = Integer.parseInt(jsonObject.get("unseen_message").toString());
+                    if (count != 0) {
+                        txtCount.setText("you got new message");
+                    } else {
+                        txtCount.setText(null);
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        count();
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(Config.PUSH_NOTIFICATION));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mRegistrationBroadcastReceiver);
+    }
+
+    private void menuClick(View v) {
+        PopupMenu popup = new PopupMenu(getActivity(), v);
+        popup.inflate(R.menu.top_menu);
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.logout:
+                        isOnline("0");
+                        sessionManager.logout();
+                        try {
+                            FirebaseInstanceId.getInstance().deleteInstanceId();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        startActivity(new Intent(getActivity(), LoginActivity.class).
+                                setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+                        break;
+//                            case R.id.menu2:
+//                                //handle menu2 click
+//                                break;
+                    default:
+                        break;
+
+                }
+                return false;
+            }
+        });
+
+        popup.show();
+    }
+
+    private void isOnline(String status){
+        userViewModel.isOnline("Bearer " + api,userId,status);
+    }
+
 }

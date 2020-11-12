@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorAccent"
+    android:background="@color/colorPrimary"
     tools:context=".ChatActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -13,28 +13,44 @@
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="start|center">
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/profile_image"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/ic_launcher_foreground" />
-
-            <TextView
-                android:id="@+id/username"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:id="@+id/toolbarLayout"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-    </androidx.appcompat.widget.Toolbar>
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="0dp"
+                android:gravity="center|start"
+                android:orientation="horizontal">
 
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/profile_image"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_launcher_foreground" />
+
+                <TextView
+                    android:id="@+id/username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/imgPurchase"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="10dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/purchase" />
+        </RelativeLayout>
+    </androidx.appcompat.widget.Toolbar>
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -48,8 +64,8 @@
         android:id="@+id/bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardBackgroundColor="@color/colorPrimary"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        app:cardBackgroundColor="@color/colorPrimary">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -60,14 +76,14 @@
                 android:id="@+id/text_send"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:layout_marginStart="10dp"
                 android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
                 android:layout_toStartOf="@id/btn_send"
                 android:layout_toEndOf="@+id/imgDefaultText"
-                android:theme="@style/ChatEditText"
                 android:background="@drawable/chat_edit_text"
-                android:hint="Type a message..." />
+                android:hint="Type a message..."
+                android:textColor="@color/white"
+                android:theme="@style/ChatEditText" />
 
             <ImageView
                 android:id="@+id/btn_send"
@@ -82,9 +98,9 @@
                 android:id="@+id/imgSelect"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:layout_marginStart="10dp"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
                 app:srcCompat="@drawable/ic_baseline_image_24"
                 app:tint="@color/white" />
 
@@ -92,14 +108,15 @@
                 android:id="@+id/imgDefaultText"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:layout_marginStart="10dp"
                 android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
                 android:layout_toEndOf="@+id/imgSelect"
                 app:srcCompat="@drawable/ic_baseline_texture_24"
                 app:tint="@color/white" />
 
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
+
 
 </RelativeLayout>
 

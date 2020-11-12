@@ -7,24 +7,18 @@ public class Banner {
     @SerializedName("id")
     @Expose
     private Integer id;
-    @SerializedName("title")
+    @SerializedName("slider")
     @Expose
-    private String title;
-    @SerializedName("logo")
-    @Expose
-    private String logo;
-    @SerializedName("url")
-    @Expose
-    private String url;
+    private String slider;
     @SerializedName("app_id")
     @Expose
     private Integer appId;
     @SerializedName("created_at")
     @Expose
-    private Object createdAt;
+    private String createdAt;
     @SerializedName("updated_at")
     @Expose
-    private Object updatedAt;
+    private String updatedAt;
 
     public Integer getId() {
         return id;
@@ -34,28 +28,12 @@ public class Banner {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getSlider() {
+        return slider;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getLogo() {
-        return logo;
-    }
-
-    public void setLogo(String logo) {
-        this.logo = logo;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
+    public void setSlider(String slider) {
+        this.slider = slider;
     }
 
     public Integer getAppId() {
@@ -66,19 +44,19 @@ public class Banner {
         this.appId = appId;
     }
 
-    public Object getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Object createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Object getUpdatedAt() {
+    public String getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Object updatedAt) {
+    public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

@@ -19,23 +19,20 @@ import com.team15.webchat.ChatActivity;
 import com.team15.webchat.Model.ActiveUserList;
 import com.team15.webchat.R;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 public class ActiveListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context context;
-    private List<ActiveUserList> userList;
+    private List<ActiveUserList> userList = new ArrayList<>();
     private static final int LOADING = 0;
     private static final int ITEM = 1;
     private boolean isLoadingAdded = false;
 
-    public ActiveListAdapter(Context context) {
+    public ActiveListAdapter(Context context,List<ActiveUserList> userList) {
         this.context = context;
-        userList = new LinkedList<>();
-    }
-
-    public void setMovieList(List<ActiveUserList> userList) {
         this.userList = userList;
     }
 
@@ -102,29 +99,15 @@ public class ActiveListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public void addLoadingFooter() {
         isLoadingAdded = true;
-        add(new ActiveUserList());
     }
 
     public void removeLoadingFooter() {
         isLoadingAdded = false;
-
         int position = userList.size() - 1;
         ActiveUserList result = getItem(position);
-
         if (result != null) {
             userList.remove(position);
             notifyItemRemoved(position);
-        }
-    }
-
-    public void add(ActiveUserList movie) {
-        userList.add(movie);
-        notifyItemInserted(userList.size() - 1);
-    }
-
-    public void addAll(List<ActiveUserList> moveResults) {
-        for (ActiveUserList result : moveResults) {
-            add(result);
         }
     }
 

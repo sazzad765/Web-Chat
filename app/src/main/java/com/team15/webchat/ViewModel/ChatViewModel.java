@@ -16,11 +16,11 @@ public class ChatViewModel extends ViewModel {
     private LiveData<User> getUser;
     LiveData<ActiveUser> data;
     LiveData<ChatListPaging>pagingLiveData;
+    LiveData<ChatPag> chatPagLiveData;
 
     public ChatViewModel() {
         super();
         repository = ChatRepository.getInstance();
-
     }
 
     public LiveData<ActiveUser> activeUser(String token, String appId,String currentPage) {
@@ -34,12 +34,14 @@ public class ChatViewModel extends ViewModel {
     }
 
     public LiveData<ChatPag> messageData(String token, String sender_id, String receiver_id, String appId) {
-        LiveData<ChatPag> data;
-        data = repository.messageData(token, sender_id,receiver_id,appId);
-        return data;
+        chatPagLiveData = repository.messageData(token, sender_id,receiver_id,appId);
+        return chatPagLiveData;
     }
 
     public void sendMessage(String token ,String senderId,String receiverId,String message,String type) {
         repository.sendMessage( token , senderId, receiverId, message, type);
+    }
+    public void seenMessage(String token ,String senderId,String receiverId) {
+        repository.seenMessage( token , senderId, receiverId);
     }
 }

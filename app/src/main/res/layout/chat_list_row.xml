@@ -35,6 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/name"
         android:layout_margin="5dp"
+        android:singleLine="true"
         android:layout_toStartOf="@+id/count"
         android:layout_toEndOf="@+id/profileImage"
         />
@@ -49,11 +50,12 @@
 
     <TextView
         android:id="@+id/count"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
         android:layout_below="@id/timestamp"
         android:layout_alignParentRight="true"
         android:layout_marginTop="5dp"
+        android:visibility="gone"
         android:background="@drawable/bg_circle"
         android:gravity="center"
         android:textColor="@color/white"

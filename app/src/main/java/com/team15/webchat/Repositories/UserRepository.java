@@ -121,6 +121,23 @@ public class UserRepository extends Observable {
         return apiResponse;
     }
 
+    public LiveData<ApiResponse> updateRef(String token,String userId,String refId){
+        final MutableLiveData<ApiResponse> apiResponse = new MutableLiveData<>();
+        Call<ApiResponse> call2 = apiInterface.updateRef(token,userId,refId);
+        call2.enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                apiResponse.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse> call, Throwable t) {
+
+            }
+        });
+        return apiResponse;
+    }
+
     private static class UpdateDeviceIdAsyncTask extends AsyncTask<DeviceReg , Void, Void> {
         private final APIInterface apiInterface;
         private UpdateDeviceIdAsyncTask(APIInterface apiInterface) {

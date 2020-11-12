@@ -13,18 +13,24 @@ public class User {
     @SerializedName("phone")
     @Expose
     private String phone;
-    @SerializedName("email")
-    @Expose
-    private String email;
     @SerializedName("image")
     @Expose
     private String image;
     @SerializedName("role")
     @Expose
     private String role;
-    @SerializedName("app_id")
+    @SerializedName("purchase")
     @Expose
-    private String appId;
+    private Integer purchase;
+    @SerializedName("favorite")
+    @Expose
+    private Integer favorite;
+    @SerializedName("ref")
+    @Expose
+    private String ref;
+    @SerializedName("point")
+    @Expose
+    private Integer point;
 
     public Integer getId() {
         return id;
@@ -50,14 +56,6 @@ public class User {
         this.phone = phone;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getImage() {
         return image;
     }
@@ -74,11 +72,35 @@ public class User {
         this.role = role;
     }
 
-    public String getAppId() {
-        return appId;
+    public Integer getPurchase() {
+        return purchase;
     }
 
-    public void setAppId(String appId) {
-        this.appId = appId;
+    public void setPurchase(Integer purchase) {
+        this.purchase = purchase;
+    }
+
+    public Integer getFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(Integer favorite) {
+        this.favorite = favorite;
+    }
+
+    public String getRef() {
+        return ref;
+    }
+
+    public void setRef(String ref) {
+        this.ref = ref;
+    }
+
+    public Integer getPoint() {
+        return point;
+    }
+
+    public void setPoint(Integer point) {
+        this.point = point;
     }
 }

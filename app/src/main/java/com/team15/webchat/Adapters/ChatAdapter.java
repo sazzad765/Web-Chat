@@ -1,6 +1,7 @@
 package com.team15.webchat.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.team15.webchat.ImageViewActivity;
 import com.team15.webchat.Model.Chat;
 import com.team15.webchat.R;
 
@@ -74,14 +76,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
-        Chat chat = chatList.get(position);
+        final Chat chat = chatList.get(position);
         switch (getItemViewType(position)) {
             case MSG_TYPE_RIGHT:
                 ChatAdapter.RightChatViewHolder rightViewHolder = (ChatAdapter.RightChatViewHolder) holder;
                 rightViewHolder.show_message.setText(chat.getMessage());
                 if (position == chatList.size() - 1) {
                     rightViewHolder.txt_seen.setVisibility(View.VISIBLE);
-                    if (chat.getSeen() == 1) {
+                    if (chat.getSeen() == 0) {
                         rightViewHolder.txt_seen.setText("Seen");
                     } else {
                         rightViewHolder.txt_seen.setText("Sent");
@@ -100,12 +102,29 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 Glide.with(context)
                         .load(chat.getMessage())
                         .into(rightImageViewHolder.chatImageView);
+                rightImageViewHolder.chatImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(context, ImageViewActivity.class)
+                                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra("url",chat.getMessage());
+                        context.startActivity(intent);
+                    }
+                });
                 break;
             case IMG_TYPE_LEFT:
                 ChatAdapter.LeftImageViewHolder leftImageViewHolder = (ChatAdapter.LeftImageViewHolder) holder;
                 Glide.with(context)
                         .load(chat.getMessage())
                         .into(leftImageViewHolder.chatImageView);
+                leftImageViewHolder.chatImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(context, ImageViewActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra("url",chat.getMessage());
+                        context.startActivity(intent);
+                    }
+                });
                 break;
             case LOADING:
                 ChatAdapter.LoadingViewHolder loadingViewHolder = (ChatAdapter.LoadingViewHolder) holder;

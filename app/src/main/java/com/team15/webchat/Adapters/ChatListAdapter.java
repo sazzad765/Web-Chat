@@ -2,6 +2,7 @@ package com.team15.webchat.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,20 +19,23 @@ import com.team15.webchat.ChatActivity;
 import com.team15.webchat.Model.ChatList;
 import com.team15.webchat.R;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context context;
-    private List<ChatList> chatList;
+    private List<ChatList> chatList = new ArrayList<>();
     private static final int LOADING = 0;
     private static final int ITEM = 1;
     private boolean isLoadingAdded = false;
+    String userId;
 
-    public ChatListAdapter(Context context) {
+    public ChatListAdapter(Context context, List<ChatList> chatList, String userId) {
         this.context = context;
-        chatList = new LinkedList<>();
+        this.chatList = chatList;
+        this.userId = userId;
     }
 
 
@@ -62,12 +66,25 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case ITEM:
                 ChatListAdapter.UserViewHolder userViewHolder = (ChatListAdapter.UserViewHolder) holder;
                 userViewHolder.txtName.setText(chatList1.getName());
-//                userViewHolder.txtMessage.setText(chatList1.getName());
-                userViewHolder.count.setText(chatList1.getTotalMessage().toString());
-                Glide.with(context).load(chatList1.getImage()).apply(RequestOptions.centerCropTransform()).into(userViewHolder.profileImage);
-                if (chatList1.getActiveStatus()==1){
-                    userViewHolder.active_status.setImageResource(R.color.active);
+                userViewHolder.txtMessage.setText(chatList1.getLastMessage());
+                if (chatList1.getSenderId().equals(userId)) {
+                    userViewHolder.txtMessage.setTypeface(null, Typeface.NORMAL);
+                    userViewHolder.count.setVisibility(View.GONE);
                 }else {
+                    if (chatList1.getSeen()==1) {
+                        userViewHolder.txtMessage.setTypeface(null, Typeface.BOLD);
+                        userViewHolder.count.setVisibility(View.VISIBLE);
+                    } else {
+                        userViewHolder.txtMessage.setTypeface(null, Typeface.NORMAL);
+                        userViewHolder.count.setVisibility(View.GONE);
+                    }
+                }
+
+//                userViewHolder.count.setText(chatList1.getSeen().toString());
+                Glide.with(context).load(chatList1.getImage()).apply(RequestOptions.centerCropTransform()).into(userViewHolder.profileImage);
+                if (chatList1.getActiveStatus() == 1) {
+                    userViewHolder.active_status.setImageResource(R.color.active);
+                } else {
                     userViewHolder.active_status.setImageResource(R.color.inactive);
                 }
                 userViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -100,7 +117,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public void addLoadingFooter() {
         isLoadingAdded = true;
-        add(new ChatList());
+//        add(new ChatList());
     }
 
     public void removeLoadingFooter() {
@@ -115,16 +132,17 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    public void add(ChatList movie) {
-        chatList.add(movie);
-        notifyItemInserted(chatList.size() - 1);
-    }
+//    public void add(ChatList movie) {
+//        chatList.add(movie);
+//        notifyItemInserted(chatList.size() - 1);
+//    }
 
-    public void addAll(List<ChatList> moveResults) {
-        for (ChatList result : moveResults) {
-            add(result);
-        }
-    }
+//    public void addAll(List<ChatList> moveResults) {
+//        for (ChatList result : moveResults) {
+//            add(result);
+//        }
+//        notifyDataSetChanged();
+//    }
 
     public ChatList getItem(int position) {
         return chatList.get(position);
@@ -133,13 +151,13 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public class UserViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView txtName,txtMessage,count;
-        private ImageView profileImage,active_status;
+        private TextView txtName, txtMessage, count;
+        private ImageView profileImage, active_status;
 
         public UserViewHolder(View itemView) {
             super(itemView);
-            profileImage =  itemView.findViewById(R.id.profileImage);
-            active_status =  itemView.findViewById(R.id.active_status);
+            profileImage = itemView.findViewById(R.id.profileImage);
+            active_status = itemView.findViewById(R.id.active_status);
             txtName = itemView.findViewById(R.id.name);
             txtMessage = itemView.findViewById(R.id.txtMessage);
             count = itemView.findViewById(R.id.count);

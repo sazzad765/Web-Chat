@@ -3,7 +3,9 @@ package com.team15.webchat.Model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Chat {
+import java.io.Serializable;
+
+public class Chat implements Serializable {
     @SerializedName("reciver_id")
     @Expose
     private String reciverId;

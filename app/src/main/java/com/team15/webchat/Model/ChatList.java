@@ -4,21 +4,46 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class ChatList {
+    @SerializedName("user_id")
+    @Expose
+    private Integer userId;
+    @SerializedName("sender_id")
+    @Expose
+    private String senderId;
     @SerializedName("name")
     @Expose
     private String name;
     @SerializedName("image")
     @Expose
     private String image;
-    @SerializedName("user_id")
-    @Expose
-    private String userId;
     @SerializedName("active_status")
     @Expose
     private Integer activeStatus;
-    @SerializedName("total_message")
+    @SerializedName("last_message")
     @Expose
-    private Integer totalMessage;
+    private String lastMessage;
+    @SerializedName("seen")
+    @Expose
+    private Integer seen;
+    @SerializedName("created_at")
+    @Expose
+    private String createdAt;
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public String getSenderId() {
+        return senderId;
+    }
+
+    public void setSenderId(String senderId) {
+        this.senderId = senderId;
+    }
 
     public String getName() {
         return name;
@@ -36,14 +61,6 @@ public class ChatList {
         this.image = image;
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
     public Integer getActiveStatus() {
         return activeStatus;
     }
@@ -52,11 +69,27 @@ public class ChatList {
         this.activeStatus = activeStatus;
     }
 
-    public Integer getTotalMessage() {
-        return totalMessage;
+    public String getLastMessage() {
+        return lastMessage;
     }
 
-    public void setTotalMessage(Integer totalMessage) {
-        this.totalMessage = totalMessage;
+    public void setLastMessage(String lastMessage) {
+        this.lastMessage = lastMessage;
+    }
+
+    public Integer getSeen() {
+        return seen;
+    }
+
+    public void setSeen(Integer seen) {
+        this.seen = seen;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 }

@@ -1,10 +1,15 @@
 package com.team15.webchat.Fragment;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -40,6 +45,8 @@ public class ActiveListFragment extends Fragment {
     private int currentPage = PAGE_START;
     List<ActiveUserList> results = new ArrayList<>();
 
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -74,6 +81,13 @@ public class ActiveListFragment extends Fragment {
                 return isLoading;
             }
         });
+        loadFirstPage();
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                loadFirstPage();
+            }
+        };
         return view;
     }
 
@@ -81,16 +95,18 @@ public class ActiveListFragment extends Fragment {
         chatViewModel.activeUser("Bearer " + api, Config.APP_ID, String.valueOf(currentPage)).observe(getActivity(), new Observer<ActiveUser>() {
             @Override
             public void onChanged(ActiveUser activeUser) {
-                activeListAdapter.removeLoadingFooter();
-                isLoading = false;
-                if (activeUser.getTotal() > 0) {
-                    for (int i = 0; i < activeUser.getData().size(); i++) {
-                        results.add(activeUser.getData().get(i));
+                if (activeUser != null) {
+                    activeListAdapter.removeLoadingFooter();
+                    isLoading = false;
+                    if (activeUser.getTotal() > 0) {
+                        for (int i = 0; i < activeUser.getData().size(); i++) {
+                            results.add(activeUser.getData().get(i));
+                        }
+                        activeListAdapter.notifyDataSetChanged();
                     }
-                    activeListAdapter.notifyDataSetChanged();
+                    if (currentPage != TOTAL_PAGES) activeListAdapter.addLoadingFooter();
+                    else isLastPage = true;
                 }
-                if (currentPage != TOTAL_PAGES) activeListAdapter.addLoadingFooter();
-                else isLastPage = true;
             }
         });
     }
@@ -101,23 +117,38 @@ public class ActiveListFragment extends Fragment {
         chatViewModel.activeUser("Bearer " + api, Config.APP_ID, String.valueOf(currentPage)).observe(getActivity(), new Observer<ActiveUser>() {
             @Override
             public void onChanged(ActiveUser activeUser) {
-                activeListProgressBar.setVisibility(View.INVISIBLE);
-                TOTAL_PAGES = activeUser.getLastPage();
-                if (activeUser.getTotal() > 0) {
-                    for (int i = 0; i < activeUser.getData().size(); i++) {
-                       results.add(activeUser.getData().get(i));
+                if (activeUser != null) {
+                    activeListProgressBar.setVisibility(View.INVISIBLE);
+                    TOTAL_PAGES = activeUser.getLastPage();
+                    if (activeUser.getTotal() > 0) {
+                        for (int i = 0; i < activeUser.getData().size(); i++) {
+                            results.add(activeUser.getData().get(i));
+                        }
+                        activeListAdapter.notifyDataSetChanged();
                     }
-                    activeListAdapter.notifyDataSetChanged();
+                    if (currentPage < TOTAL_PAGES) activeListAdapter.addLoadingFooter();
+                    else isLastPage = true;
                 }
-                if (currentPage < TOTAL_PAGES) activeListAdapter.addLoadingFooter();
-                else isLastPage = true;
             }
         });
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Config.MESSAGE_NOTIFICATION);
+        filter.addAction(Config.PUSH_NOTIFICATION);
+        filter.addAction(Config.UPDATE_NOTIFICATION);
+
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mRegistrationBroadcastReceiver, filter);
         loadFirstPage();
+    }
+
+    @Override
+    public void onPause() {
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mRegistrationBroadcastReceiver);
+        super.onPause();
     }
 }

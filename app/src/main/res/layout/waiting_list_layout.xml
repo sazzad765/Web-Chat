@@ -1,42 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/chat_layout"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="8dp">
-
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profileImage"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:src="@drawable/ic_launcher_foreground"
         app:civ_border_color="#FF000000"
         app:civ_border_width="1dp" />
-
-    <TextView
-        android:id="@+id/txtName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/profileImage"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="5dp"
-        android:gravity="center|start"
-        android:layout_toEndOf="@+id/profileImage"
-        android:textColor="@android:color/black"
-        android:textSize="16sp"
-        android:textStyle="bold" />
-
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/active_status"
         android:layout_width="15dp"
         android:layout_height="15dp"
         app:civ_border_color="#FF000000"
-        android:src="@color/inactive"
+        android:src="#39DF3F"
         app:civ_border_width="1dp"
         android:layout_alignEnd="@+id/profileImage"
         android:layout_alignBottom="@+id/profileImage"/>
+
+    <TextView
+        android:id="@+id/txtName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/profileImage"
+        android:layout_alignStart="@+id/profileImage"
+        android:layout_alignEnd="@+id/profileImage"
+        android:layout_marginTop="2dp"
+        android:gravity="center"
+        android:singleLine="true"
+        android:textColor="@color/colorPrimary"
+        android:textSize="12sp" />
 
 </RelativeLayout>

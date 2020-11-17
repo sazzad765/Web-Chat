@@ -48,7 +48,6 @@ public class SliderAdapter extends SliderViewAdapter<SliderAdapter.SliderAdapter
 //        viewHolder.textViewDescription.setText(sliderItem.getTitle());
         viewHolder.textViewDescription.setTextSize(16);
         viewHolder.textViewDescription.setTextColor(Color.WHITE);
-//        "http://post.freedownloadimage.com/" +
         final String url =  sliderItem.getSlider();
         Glide.with(context).load(url).into(viewHolder.imageViewBackground);
 //        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {

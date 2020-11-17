@@ -41,7 +41,7 @@
 
     <style name="ChatEditText" parent="Widget.AppCompat.EditText">
         <item name="android:textCursorDrawable">@color/white</item>
-        <item name="android:textColorHint">@color/white</item>
+        <item name="android:textColorHint">#50ffffff</item>
     </style>
 
     <style name="txt_list" parent="Widget.AppCompat.TextView">

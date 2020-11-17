@@ -132,7 +132,24 @@ public class AppRepository extends Observable {
         return data;
     }
 
-    public LiveData<JsonObject> getPosition(String token, String userId, String selle_id) {
+    public LiveData<ApiResponse> password_change(String token, String userId, String old_password,String new_password) {
+        final MutableLiveData<ApiResponse> data = new MutableLiveData<>();
+        Call<ApiResponse> call2 = apiInterface.password_change(token, userId, old_password,new_password);
+        call2.enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                data.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse> call, Throwable t) {
+                call.cancel();
+            }
+        });
+        return data;
+    }
+
+        public LiveData<JsonObject> getPosition(String token, String userId, String selle_id) {
 
         final MutableLiveData<JsonObject> liveData = new MutableLiveData<>();
         Call<JsonObject> call2 = apiInterface.waitingTime(token, userId, selle_id, Config.APP_ID);
@@ -154,6 +171,24 @@ public class AppRepository extends Observable {
 
         final MutableLiveData<JsonObject> liveData = new MutableLiveData<>();
         Call<JsonObject> call2 = apiInterface.getSeenCount(token, userId, selle_id, Config.APP_ID);
+        call2.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                liveData.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                call.cancel();
+            }
+        });
+        return liveData;
+    }
+
+    public LiveData<JsonObject> getSellerContact(String token) {
+
+        final MutableLiveData<JsonObject> liveData = new MutableLiveData<>();
+        Call<JsonObject> call2 = apiInterface.getSellerContact(token, Config.APP_ID);
         call2.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {

@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.team15.webchat.ImageViewActivity;
+import com.team15.webchat.Model.ActiveUserList;
 import com.team15.webchat.Model.Chat;
 import com.team15.webchat.R;
 
@@ -81,7 +82,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             case MSG_TYPE_RIGHT:
                 ChatAdapter.RightChatViewHolder rightViewHolder = (ChatAdapter.RightChatViewHolder) holder;
                 rightViewHolder.show_message.setText(chat.getMessage());
-                if (position == chatList.size() - 1) {
+                if (position == 0) {
                     rightViewHolder.txt_seen.setVisibility(View.VISIBLE);
                     if (chat.getSeen() == 0) {
                         rightViewHolder.txt_seen.setText("Seen");
@@ -136,6 +137,23 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public int getItemCount() {
         return chatList.size();
+    }
+
+    public void addLoadingFooter() {
+        isLoadingAdded = true;
+    }
+
+    public void removeLoadingFooter() {
+        isLoadingAdded = false;
+        int position = chatList.size() - 1;
+        Chat result = getItem(position);
+        if (result != null) {
+            chatList.remove(position);
+            notifyItemRemoved(position);
+        }
+    }
+    public Chat getItem(int position) {
+        return chatList.get(position);
     }
 
     @Override

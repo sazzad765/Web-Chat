@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Fragment.HomeFragment">
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -14,8 +15,10 @@
             android:id="@+id/topBarCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="5dp"
             android:background="@color/colorPrimary"
+            android:padding="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <de.hdodenhof.circleimageview.CircleImageView
@@ -100,9 +103,9 @@
             android:id="@+id/slider_card_small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
             app:cardCornerRadius="6dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -128,53 +131,66 @@
 
         </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardView2"
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/pagerSlider"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:maxHeight="300dp"
+            android:paddingStart="32dp"
+            android:paddingEnd="32dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="10dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            app:cardCornerRadius="6dp"
             app:layout_constraintBottom_toTopOf="@+id/btnWrite"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/slider_card_small">
+            app:layout_constraintTop_toBottomOf="@+id/slider_card_small" />
+        <!--        <androidx.cardview.widget.CardView-->
+        <!--            android:id="@+id/cardView2"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="0dp"-->
+        <!--            android:layout_marginTop="16dp"-->
+        <!--            android:layout_marginBottom="10dp"-->
+        <!--            android:layout_marginEnd="16dp"-->
+        <!--            android:layout_marginStart="16dp"-->
+        <!--            app:cardCornerRadius="6dp"-->
+        <!--            app:layout_constraintBottom_toTopOf="@+id/btnWrite"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/slider_card_small">-->
 
-            <com.smarteist.autoimageslider.SliderView
-                android:id="@+id/imageSlider"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:sliderAnimationDuration="600"
-                app:sliderAutoCycleDirection="back_and_forth"
-                app:sliderAutoCycleEnabled="true"
-                app:sliderIndicatorAnimationDuration="600"
-                app:sliderIndicatorGravity="center_horizontal|bottom"
-                app:sliderIndicatorMargin="15dp"
-                app:sliderIndicatorOrientation="horizontal"
-                app:sliderIndicatorPadding="3dp"
-                app:sliderIndicatorRadius="2dp"
-                app:sliderIndicatorSelectedColor="#5A5A5A"
-                app:sliderIndicatorUnselectedColor="#FFF"
-                app:sliderScrollTimeInSec="1"
-                app:sliderStartAutoCycle="true" />
+        <!--            <com.smarteist.autoimageslider.SliderView-->
+        <!--                android:id="@+id/imageSlider"-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                app:sliderAnimationDuration="600"-->
+        <!--                app:sliderAutoCycleDirection="back_and_forth"-->
+        <!--                app:sliderAutoCycleEnabled="true"-->
+        <!--                app:sliderIndicatorAnimationDuration="600"-->
+        <!--                app:sliderIndicatorGravity="center_horizontal|bottom"-->
+        <!--                app:sliderIndicatorMargin="15dp"-->
+        <!--                app:sliderIndicatorOrientation="horizontal"-->
+        <!--                app:sliderIndicatorPadding="3dp"-->
+        <!--                app:sliderIndicatorRadius="2dp"-->
+        <!--                app:sliderIndicatorSelectedColor="#5A5A5A"-->
+        <!--                app:sliderIndicatorUnselectedColor="#FFF"-->
+        <!--                app:sliderScrollTimeInSec="1"-->
+        <!--                app:sliderStartAutoCycle="true" />-->
 
-        </androidx.cardview.widget.CardView>
+        <!--        </androidx.cardview.widget.CardView>-->
 
         <Button
             android:id="@+id/btnWrite"
             android:layout_width="150dp"
             android:layout_height="40dp"
             android:layout_marginBottom="10dp"
-            android:text="@string/write_now"
-            android:padding="10dp"
-            android:textAllCaps="false"
-            android:drawableEnd="@drawable/writing_tool"
-            android:shadowColor="@color/colorPrimary"
-            android:textColor="@color/white"
             android:background="@drawable/button_home"
+            android:drawableEnd="@drawable/writing_tool"
             android:drawableTint="@color/white"
+            android:padding="10dp"
+            android:shadowColor="@color/colorPrimary"
+            android:text="@string/write_now"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

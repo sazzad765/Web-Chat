@@ -26,21 +26,23 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         sessionManager = new SessionManager(context);
         HashMap<String, String> userInfo = sessionManager.get_user();
-        String userId = userInfo.get(SessionManager.USER_ID);
+
         String api = userInfo.get(SessionManager.API_KEY);
+        String userId = userInfo.get(SessionManager.USER_ID);
+        String userType = userInfo.get(SessionManager.USER_TYPE);
 
         Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
         if (remoteInput != null) {
             CharSequence replyText = remoteInput.getCharSequence("key_text_reply");
-            String receiver_id = intent.getStringExtra("id");
-            Toast.makeText(context, receiver_id, Toast.LENGTH_SHORT).show();
+            String receiver_id = intent.getStringExtra("sender");
+            String sender = intent.getStringExtra("receiver");
 
-            Message message = new Message(replyText,"userId","Me");
+            Message message = new Message(replyText,"userId","Me","id");
             MyFirebaseMessagingService.MESSAGES.add(message);
             MyFirebaseMessagingService.sendChannel1Notification(context);
             if (sessionManager.isLogin()) {
                 chatRepository = ChatRepository.getInstance();
-                chatRepository.sendMessage("Bearer " + api, userId, receiver_id, replyText.toString(), "text");
+                chatRepository.sendMessage("Bearer " + api, userId, receiver_id, replyText.toString(), "text",userType);
             }
         }
 

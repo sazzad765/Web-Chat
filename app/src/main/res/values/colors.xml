@@ -16,4 +16,6 @@
     <color name="login_reg_card">#466D8A</color>
     <color name="logo_color">#08385C</color>
     <color name="chat_right">#176097</color>
+
+    <color name="red">#DC2727</color>
 </resources>

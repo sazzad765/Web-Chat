@@ -189,6 +189,9 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         switch (v.getId()) {
             case R.id.txtPointDe:
                 int i = Integer.parseInt(editPoint.getText().toString());
+                if(i<=2){
+                    return;
+                }
                 i = i - 1;
                 editPoint.setText(String.valueOf(i));
 

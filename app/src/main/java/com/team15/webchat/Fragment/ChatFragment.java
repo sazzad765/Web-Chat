@@ -7,14 +7,18 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,39 +29,26 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
 import com.team15.webchat.Adapters.ChatAdapter;
 import com.team15.webchat.Adapters.PaginationScrollListener;
 import com.team15.webchat.Api.APIClient;
 import com.team15.webchat.Api.APIInterface;
 import com.team15.webchat.App.Config;
 import com.team15.webchat.ChatActivity;
-import com.team15.webchat.ChatDataActivity;
-import com.team15.webchat.Data.DBHelper;
 import com.team15.webchat.Model.ApiResponse;
 import com.team15.webchat.Model.Chat;
 import com.team15.webchat.Model.ChatPag;
 import com.team15.webchat.Model.User;
 import com.team15.webchat.R;
 import com.team15.webchat.Session.SessionManager;
-import com.team15.webchat.UserInfoActivity;
 import com.team15.webchat.ViewModel.AppViewModel;
 import com.team15.webchat.ViewModel.ChatViewModel;
 
@@ -85,7 +76,7 @@ public class ChatFragment extends Fragment {
     private AppViewModel appViewModel;
     private SessionManager sessionManager;
     private ChatAdapter chatAdapter;
-    private String api, userId, receiverId;
+    private String api, userId, receiverId, userType;
     private EditText edit_send;
     private ImageView btn_send, profile_image, imgSelect;
     private TextView username;
@@ -108,26 +99,29 @@ public class ChatFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
-
         init(view);
-        chatViewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
+
+        chatViewModel = new ViewModelProvider(this).get(ChatViewModel.class);
+        appViewModel = new ViewModelProvider(this).get(AppViewModel.class);
         sessionManager = new SessionManager(getActivity());
+
         HashMap<String, String> userInfo = sessionManager.get_user();
         userId = userInfo.get(SessionManager.USER_ID);
         api = userInfo.get(SessionManager.API_KEY);
         receiverId = userInfo.get(SessionManager.SELLER_ID);
+        userType = userInfo.get(SessionManager.USER_TYPE);
+
         chat = new ArrayList<>();
         pDialog = new ProgressDialog(getActivity());
         pDialog.setMessage("Sending...");
         mHandler = new Handler();
 
-//        receiverId = extras.getString("receiverId");
-
-
         chatAdapter = new ChatAdapter(getActivity(), chat, userId);
         recyclerChat.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        layoutManager.setStackFromEnd(true);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        layoutManager.setSmoothScrollbarEnabled(true);
+        layoutManager.setReverseLayout(true);
         recyclerChat.setLayoutManager(layoutManager);
         recyclerChat.setAdapter(chatAdapter);
 
@@ -136,7 +130,7 @@ public class ChatFragment extends Fragment {
             public void onClick(View v) {
                 String msg = edit_send.getText().toString();
                 if (!msg.equals("")) {
-                    sendMessage(msg,userId,receiverId, "text");
+                    sendMessage(msg, userId, receiverId, "text");
                 } else {
                     Toast.makeText(getActivity(), "You can't send empty message", Toast.LENGTH_SHORT).show();
                 }
@@ -155,7 +149,7 @@ public class ChatFragment extends Fragment {
             protected void loadMoreItems() {
                 isLoading = true;
                 currentPage += 1;
-//                loadNextPage();
+                loadNextPage();
             }
 
             @Override
@@ -175,13 +169,13 @@ public class ChatFragment extends Fragment {
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().equals(Config.PUSH_NOTIFICATION)) {
-                    Chat mChat = (Chat)intent.getSerializableExtra("chat");
-                    if (mChat.getReciverId().equals(userId)){
-                        chat.add(mChat);
+                if (intent.getAction().equals(Config.MESSAGE_NOTIFICATION)) {
+                    Chat mChat = (Chat) intent.getSerializableExtra("chat");
+                    if (mChat.getReciverId().equals(userId)) {
+                        chat.add(0, mChat);
                         chatAdapter.notifyDataSetChanged();
                         if (chatAdapter.getItemCount() > 1) {
-                            recyclerChat.getLayoutManager().smoothScrollToPosition(recyclerChat, null, chatAdapter.getItemCount() - 1);
+                            recyclerChat.getLayoutManager().smoothScrollToPosition(recyclerChat, null, 0);
                         }
                     }
                     seen();
@@ -193,13 +187,11 @@ public class ChatFragment extends Fragment {
 
     private final Runnable m_Runnable = new Runnable() {
         public void run() {
-
             mHandler.postDelayed(m_Runnable, 50000);
         }
     };
 
     private void setProfile() {
-        appViewModel = ViewModelProviders.of(this).get(AppViewModel.class);
         appViewModel.getSeller("Bearer " + api, receiverId).observe(getActivity(), new Observer<User>() {
             @Override
             public void onChanged(User user) {
@@ -212,48 +204,55 @@ public class ChatFragment extends Fragment {
         });
     }
 
-
-//    private void loadNextPage() {
-//        chatViewModel.activeUser("Bearer " + api, Config.APP_ID, String.valueOf(currentPage)).observe(getActivity(), new Observer<ActiveUser>() {
-//            @Override
-//            public void onChanged(ActiveUser activeUser) {
-//                activeListAdapter.removeLoadingFooter();
-//                isLoading = false;
-//                List<ActiveUserList> results = activeUser.getData();
-//                activeListAdapter.addAll(results);
-//                if (currentPage != TOTAL_PAGES) activeListAdapter.addLoadingFooter();
-//                else isLastPage = true;
-//            }
-//        });
-//    }
-
-    public void sendMessage(String message,String senderId, String receiverId, String type) {
+    public void sendMessage(String message, String senderId, String receiverId, String type) {
         Chat chat1 = new Chat(receiverId, senderId, message, Integer.parseInt(Config.APP_ID), 1, " ", type);
-        chat.add(chat1);
+        chat.add(0, chat1);
         chatAdapter.notifyDataSetChanged();
         if (chatAdapter.getItemCount() > 1) {
-            recyclerChat.getLayoutManager().smoothScrollToPosition(recyclerChat, null, chatAdapter.getItemCount() - 1);
+            recyclerChat.getLayoutManager().smoothScrollToPosition(recyclerChat, null, 0);
         }
-        chatViewModel.sendMessage("Bearer " + api, userId, receiverId, message, type);
+        chatViewModel.sendMessage("Bearer " + api, userId, receiverId, message, type, userType);
+    }
+
+    private void loadNextPage() {
+        chatViewModel.messageData("Bearer " + api, userId, receiverId, String.valueOf(currentPage)).observe(getActivity(), new Observer<ChatPag>() {
+            @Override
+            public void onChanged(ChatPag chatPag) {
+                chatAdapter.removeLoadingFooter();
+                isLoading = false;
+                if (chatPag != null) {
+                    if (chatPag.getTotal() > 0) {
+                        for (int i = 0; i < chatPag.getData().size(); i++) {
+                            chat.add(chatPag.getData().get(i));
+                        }
+                        chatAdapter.notifyDataSetChanged();
+                    }
+                    if (currentPage != TOTAL_PAGES) chatAdapter.addLoadingFooter();
+                    else isLastPage = true;
+                }
+            }
+        });
     }
 
     private void loadFirstPage() {
         chat.clear();
-        chatViewModel.messageData("Bearer " + api, userId, receiverId, Config.APP_ID).observe(getActivity(), new Observer<ChatPag>() {
+        chatViewModel.messageData("Bearer " + api, userId, receiverId, "1").observe(getActivity(), new Observer<ChatPag>() {
             @Override
             public void onChanged(ChatPag chatPag) {
                 if (chatPag != null) {
+                    TOTAL_PAGES = chatPag.getLastPage();
+                    chat.clear();
                     if (chatPag.getTotal() > 0) {
-                        Collections.reverse(chatPag.getData());
                         for (int i = 0; i < chatPag.getData().size(); i++) {
                             chat.add(chatPag.getData().get(i));
                         }
                         chatAdapter.notifyDataSetChanged();
                         if (chatAdapter.getItemCount() > 1) {
-                            recyclerChat.getLayoutManager().smoothScrollToPosition(recyclerChat, null, chatAdapter.getItemCount() - 1);
+                            recyclerChat.getLayoutManager().smoothScrollToPosition(recyclerChat, null, 0);
                         }
                     }
-                    TOTAL_PAGES = chatPag.getLastPage();
+                    if (currentPage != TOTAL_PAGES) chatAdapter.addLoadingFooter();
+                    else isLastPage = true;
                 }
             }
         });
@@ -265,26 +264,17 @@ public class ChatFragment extends Fragment {
     }
 
     private void pickImage() {
-        Dexter.withActivity(getActivity())
-                .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                .withListener(new PermissionListener() {
-                    @Override
-                    public void onPermissionGranted(PermissionGrantedResponse response) {
-                        Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-                        startActivityForResult(gallery, PICK_IMAGE);
-                    }
-
-                    @Override
-                    public void onPermissionDenied(PermissionDeniedResponse response) {
-                        Toast.makeText(getActivity(), "you must be accept", Toast.LENGTH_SHORT).show();
-
-                    }
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
-
-                    }
-                }).check();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+            } else {
+                Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                startActivityForResult(gallery, PICK_IMAGE);
+            }
+        } else {
+            Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+            startActivityForResult(gallery, PICK_IMAGE);
+        }
     }
 
     @Override
@@ -297,58 +287,23 @@ public class ChatFragment extends Fragment {
     }
 
     private void uploadFile(Uri uri) {
-        String filePath = getRealPathFromURIPath(uri, getActivity());
-        File file = new File(filePath);
-
-        File compressedImageFile = null;
-        try {
-            compressedImageFile = new Compressor(getActivity()).compressToFile(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        RequestBody requestBody = RequestBody.create(MediaType.parse("*/*"), compressedImageFile);
-        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
-        RequestBody filename = RequestBody.create(MediaType.parse("text/plain"), file.getName());
-        RequestBody id = RequestBody.create(MediaType.parse("text/plain"), userId);
-        RequestBody reId = RequestBody.create(MediaType.parse("text/plain"), receiverId);
-        RequestBody appId = RequestBody.create(MediaType.parse("text/plain"), Config.APP_ID);
-        RequestBody ty = RequestBody.create(MediaType.parse("text/plain"), "image");
-
         pDialog.show();
-        APIInterface apiInterface = APIClient.getRetrofitInstance().create(APIInterface.class);
-        Call<ApiResponse> call = apiInterface.chatImage("Bearer " + api, fileToUpload, filename, id, reId, appId, ty);
-        call.enqueue(new Callback<ApiResponse>() {
+        chatViewModel.sendImageMessage(getActivity(), api, uri, userId, receiverId, userType).observe(this, new Observer<ApiResponse>() {
             @Override
-            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+            public void onChanged(ApiResponse apiResponse) {
                 pDialog.dismiss();
-                loadFirstPage();
-                setProfile();
-            }
-
-            @Override
-            public void onFailure(Call<ApiResponse> call, Throwable t) {
-                pDialog.dismiss();
+                if (apiResponse != null) {
+                    loadFirstPage();
+                }
             }
         });
     }
-
-    private String getRealPathFromURIPath(Uri contentURI, Activity activity) {
-        Cursor cursor = activity.getContentResolver().query(contentURI, null, null, null, null);
-        if (cursor == null) {
-            return contentURI.getPath();
-        } else {
-            cursor.moveToFirst();
-            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-            return cursor.getString(idx);
-        }
-    }
-
 
     @Override
     public void onResume() {
         super.onResume();
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mRegistrationBroadcastReceiver,
-                new IntentFilter(Config.PUSH_NOTIFICATION));
+                new IntentFilter(Config.MESSAGE_NOTIFICATION));
         m_Runnable.run();
     }
 

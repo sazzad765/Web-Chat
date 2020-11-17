@@ -9,6 +9,7 @@ import com.team15.webchat.Model.ChatPag;
 import com.team15.webchat.Model.Login;
 import com.team15.webchat.Model.PartialsInfo;
 import com.team15.webchat.Model.User;
+import com.team15.webchat.Model.WaitingList;
 
 import java.util.List;
 
@@ -86,6 +87,24 @@ public interface APIInterface {
     );
 
     @FormUrlEncoded
+    @POST("auth/waiting_list")
+    Call<List<WaitingList>> getWaitingList(
+            @Header("Authorization") String token,
+            @Field("app_id") String app_id
+    );
+
+    @FormUrlEncoded
+    @POST("auth/start_chat")
+    Call<JsonObject> startChat(
+            @Header("Authorization") String token,
+            @Field("app_id") String app_id,
+            @Field("agent_id") String agent_id,
+            @Field("user_id") String user_id,
+            @Field("seller_id") String seller_id
+
+    );
+
+    @FormUrlEncoded
     @POST("auth/active_users")
     Call<ActiveUser> activeUser(
             @Header("Authorization") String token,
@@ -99,7 +118,8 @@ public interface APIInterface {
             @Header("Authorization") String token,
             @Field("sender_id") String sender_id,
             @Field("receiver_id") String receiver_id,
-            @Field("app_id") String app_id
+            @Field("app_id") String app_id,
+            @Field("page") String page
     );
 
     @FormUrlEncoded
@@ -110,7 +130,8 @@ public interface APIInterface {
             @Field("reciver_id") String receiver_id,
             @Field("app_id") String app_id,
             @Field("message") String message,
-            @Field("type") String type
+            @Field("type") String type,
+            @Field("user_type") String user_type
 
     );
 
@@ -138,7 +159,7 @@ public interface APIInterface {
     );
 
     @FormUrlEncoded
-    @POST("auth/watting_position")
+    @POST("auth/waiting_position")
     Call<JsonObject> waitingTime(
             @Header("Authorization") String token,
             @Field("user_id") String user_id,
@@ -152,6 +173,13 @@ public interface APIInterface {
             @Header("Authorization") String token,
             @Field("user_id") String user_id,
             @Field("seller_id") String seller_id,
+            @Field("app_id") String app_id
+    );
+
+    @FormUrlEncoded
+    @POST("auth/seller_contact")
+    Call<JsonObject> getSellerContact(
+            @Header("Authorization") String token,
             @Field("app_id") String app_id
     );
 
@@ -173,7 +201,8 @@ public interface APIInterface {
             @Part("sender_id") RequestBody sender_id,
             @Part("reciver_id") RequestBody receiver_id,
             @Part("app_id") RequestBody app_id,
-            @Part("type") RequestBody type
+            @Part("type") RequestBody type,
+            @Part("user_type") RequestBody user_type
     );
 
     @FormUrlEncoded
@@ -212,5 +241,14 @@ public interface APIInterface {
             @Header("Authorization") String token,
             @Field("user_id") String user_id,
             @Field("point") String point
+    );
+
+    @FormUrlEncoded
+    @POST("auth/password_change")
+    Call<ApiResponse> password_change(
+            @Header("Authorization") String token,
+            @Field("user_id") String user_id,
+            @Field("old_password") String old_password,
+            @Field("new_password") String new_password
     );
 }

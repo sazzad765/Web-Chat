@@ -25,4 +25,8 @@ public class Config {
     public static final int NOTIFICATION_ID_BIG_IMAGE = 101;
 
     public static final int CODE_DRAW_OVER_OTHER_APP_PERMISSION = 2084;
+
+    public static final String MESSAGE_NOTIFICATION = "message";
+    public static final String UPDATE_NOTIFICATION = "update";
+
 }

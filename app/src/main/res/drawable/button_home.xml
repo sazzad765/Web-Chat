@@ -5,7 +5,7 @@
         />
     <gradient
         android:angle="45"
-        android:startColor="#67B0B7"
+        android:startColor="@color/login_background_bottom"
         android:endColor="#077e8a"
         android:type="linear"
         />

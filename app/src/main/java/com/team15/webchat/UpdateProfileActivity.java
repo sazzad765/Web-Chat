@@ -2,37 +2,30 @@ package com.team15.webchat;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.loader.content.CursorLoader;
 
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.google.gson.JsonObject;
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
 import com.team15.webchat.Api.APIClient;
 import com.team15.webchat.Api.APIInterface;
 import com.team15.webchat.Model.ApiResponse;
@@ -41,10 +34,8 @@ import com.team15.webchat.Session.SessionManager;
 import com.team15.webchat.ViewModel.UserViewModel;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 
-import id.zelory.compressor.Compressor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -89,16 +80,18 @@ public class UpdateProfileActivity extends AppCompatActivity {
         userViewModel.getUser("Bearer " + api, userId).observe(this, new Observer<User>() {
             @Override
             public void onChanged(User user) {
-                updateProgressBar.setVisibility(View.INVISIBLE);
+                if (user!=null) {
+                    updateProgressBar.setVisibility(View.INVISIBLE);
 
-                edtName.setText(user.getName());
-                edtPhone.setText(user.getPhone());
-                Glide
-                        .with(UpdateProfileActivity.this)
-                        .load(user.getImage())
-                        .centerCrop()
-                        .placeholder(R.drawable.ic_launcher_foreground)
-                        .into(updateProfileImage);
+                    edtName.setText(user.getName());
+                    edtPhone.setText(user.getPhone());
+                    Glide
+                            .with(UpdateProfileActivity.this)
+                            .load(user.getImage())
+                            .centerCrop()
+                            .placeholder(R.drawable.ic_launcher_foreground)
+                            .into(updateProfileImage);
+                }
             }
         });
         imgBack.setOnClickListener(new View.OnClickListener() {
@@ -187,26 +180,18 @@ public class UpdateProfileActivity extends AppCompatActivity {
     }
 
     private void pickImage() {
-        Dexter.withActivity(this)
-                .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                .withListener(new PermissionListener() {
-                    @Override
-                    public void onPermissionGranted(PermissionGrantedResponse response) {
-                        Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-                        startActivityForResult(gallery, PICK_IMAGE);
-                    }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(UpdateProfileActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(UpdateProfileActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+            } else {
+                Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                startActivityForResult(gallery, PICK_IMAGE);
+            }
 
-                    @Override
-                    public void onPermissionDenied(PermissionDeniedResponse response) {
-                        Toast.makeText(UpdateProfileActivity.this, "you must be accept", Toast.LENGTH_SHORT).show();
-
-                    }
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
-
-                    }
-                }).check();
+        } else {
+            Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+            startActivityForResult(gallery, PICK_IMAGE);
+        }
     }
 
     @Override

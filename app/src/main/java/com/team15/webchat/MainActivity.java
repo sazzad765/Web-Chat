@@ -14,6 +14,7 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private int[] tabIcons;
+    boolean doubleBackToExitPressedOnce = false;
 //    private String[] tabTitles = {
 //            "Home", "promotion", "Video", "Task", "Profile"
 //    };
@@ -69,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
         String token = FirebaseInstanceId.getInstance().getToken();
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         sessionManager =  new SessionManager(this);
+        sessionManager.checkLogin();
+
         HashMap<String,String> userInfo=sessionManager.get_user();
         userType = userInfo.get(SessionManager.USER_TYPE);
         user_id = userInfo.get(SessionManager.USER_ID);
@@ -167,10 +171,7 @@ public class MainActivity extends AppCompatActivity {
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().equals(Config.PUSH_NOTIFICATION)) {
-                    // new push message is received
 
-                }
             }
         };
 
@@ -215,8 +216,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
-                new IntentFilter(Config.PUSH_NOTIFICATION));
-//        NotificationUtils.clearNotifications();
+                new IntentFilter(Config.MESSAGE_NOTIFICATION));
     }
 
     @Override
@@ -240,7 +240,20 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce = false;
+            }
+        }, 2000);
     }
 
     private void menuClick(View v) {

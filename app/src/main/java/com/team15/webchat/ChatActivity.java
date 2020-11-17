@@ -3,10 +3,11 @@ package com.team15.webchat;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.loader.content.CursorLoader;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,31 +26,21 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.gson.JsonObject;
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
 import com.team15.webchat.Adapters.ChatAdapter;
 import com.team15.webchat.Adapters.PaginationScrollListener;
 import com.team15.webchat.Api.APIClient;
@@ -63,12 +54,10 @@ import com.team15.webchat.Model.User;
 import com.team15.webchat.Session.SessionManager;
 import com.team15.webchat.ViewModel.AppViewModel;
 import com.team15.webchat.ViewModel.ChatViewModel;
-import com.team15.webchat.ViewModel.UserViewModel;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -86,12 +75,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private AppViewModel appViewModel;
     private SessionManager sessionManager;
     private ChatAdapter chatAdapter;
-    private String api, userId, receiverId;
+    private String api, userId, receiverId, agentId, userType;
     private EditText edit_send;
-    private ImageView btn_send, profile_image, imgSelect, imgDefaultText, imgPurchase;
-    private TextView username;
+    private ImageView btn_send, profile_image, imgSelect, imgDefaultText, imgPurchase, imgFavourite;
+    private TextView username, txtRef;
     private ProgressDialog pDialog;
-    private LinearLayout toolbarLayout;
+    private RelativeLayout toolbarLayout;
     User mUser;
 
     List<Chat> chat;
@@ -103,22 +92,25 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private boolean isLastPage = false;
     private int TOTAL_PAGES;
     private int currentPage = PAGE_START;
-    private static final int IMAGE_REQUEST = 1;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private static final int PICK_IMAGE = 1;
+    private int isFav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         init();
-        chatViewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
-        appViewModel = ViewModelProviders.of(this).get(AppViewModel.class);
+        chatViewModel = new ViewModelProvider(this).get(ChatViewModel.class);
+        appViewModel = new ViewModelProvider(this).get(AppViewModel.class);
 
         sessionManager = new SessionManager(this);
         HashMap<String, String> userInfo = sessionManager.get_user();
         userId = userInfo.get(SessionManager.USER_ID);
         api = userInfo.get(SessionManager.API_KEY);
+        agentId = userInfo.get(SessionManager.SELLER_ID);
+        userType = userInfo.get(SessionManager.USER_TYPE);
+
         chat = new ArrayList<>();
         mydb = new DBHelper(this);
         pDialog = new ProgressDialog(this);
@@ -127,11 +119,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         Bundle extras = getIntent().getExtras();
         receiverId = extras.getString("receiverId");
 
-
-        chatAdapter = new ChatAdapter(this, chat, userId);
+        chatAdapter = new ChatAdapter(this, chat, agentId);
         recyclerChat.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-        layoutManager.setStackFromEnd(true);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        layoutManager.setSmoothScrollbarEnabled(true);
+        layoutManager.setReverseLayout(true);
         recyclerChat.setLayoutManager(layoutManager);
         recyclerChat.setAdapter(chatAdapter);
 
@@ -141,12 +134,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         toolbarLayout.setOnClickListener(this);
         imgPurchase.setOnClickListener(this);
 
+
         recyclerChat.addOnScrollListener(new PaginationScrollListener(layoutManager) {
             @Override
             protected void loadMoreItems() {
                 isLoading = true;
                 currentPage += 1;
-//                loadNextPage();
+                loadNextPage();
             }
 
             @Override
@@ -166,13 +160,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().equals(Config.PUSH_NOTIFICATION)) {
-                    Chat mChat = (Chat)intent.getSerializableExtra("chat");
-                    if (mChat.getReciverId().equals(userId)){
-                        chat.add(mChat);
+                if (intent.getAction().equals(Config.MESSAGE_NOTIFICATION)) {
+                    Chat mChat = (Chat) intent.getSerializableExtra("chat");
+                    if (mChat.getReciverId().equals(agentId) && mChat.getSenderId().equals(receiverId)) {
+                        chat.add(0, mChat);
                         chatAdapter.notifyDataSetChanged();
                         if (chatAdapter.getItemCount() > 1) {
-                            recyclerChat.getLayoutManager().smoothScrollToPosition(recyclerChat, null, chatAdapter.getItemCount() - 1);
+                            recyclerChat.getLayoutManager().smoothScrollToPosition(recyclerChat, null, 0);
                         }
                     }
                     seen();
@@ -189,53 +183,71 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     mUser = user;
                     username.setText(user.getName());
                     Glide.with(ChatActivity.this).load(user.getImage()).apply(RequestOptions.centerCropTransform()).into(profile_image);
+
+                    isFav = user.getFavorite();
+                    if (user.getFavorite() == 1) {
+                        imgFavourite.setImageResource(R.drawable.star_gd);
+                    } else {
+                        imgFavourite.setImageResource(R.drawable.star);
+                    }
+                    if (user.getRef().equals("0")) {
+                        txtRef.setVisibility(View.GONE);
+                    }
+                    txtRef.setText("Ref By: " + user.getRef());
                 }
             }
         });
     }
 
-
-//    private void loadNextPage() {
-//        chatViewModel.activeUser("Bearer " + api, Config.APP_ID, String.valueOf(currentPage)).observe(getActivity(), new Observer<ActiveUser>() {
-//            @Override
-//            public void onChanged(ActiveUser activeUser) {
-//                activeListAdapter.removeLoadingFooter();
-//                isLoading = false;
-//                List<ActiveUserList> results = activeUser.getData();
-//                activeListAdapter.addAll(results);
-//                if (currentPage != TOTAL_PAGES) activeListAdapter.addLoadingFooter();
-//                else isLastPage = true;
-//            }
-//        });
-//    }
-
-    public void sendMessage(String message, String type,String re_id) {
-        Chat chat1 = new Chat(re_id, userId, message, Integer.parseInt(Config.APP_ID), 1, " ", type);
-        chat.add(chat1);
+    public void sendMessage(String message, String type, String re_id) {
+        Chat chat1 = new Chat(re_id, agentId, message, Integer.parseInt(Config.APP_ID), 1, " ", type);
+        chat.add(0, chat1);
         chatAdapter.notifyDataSetChanged();
         if (chatAdapter.getItemCount() > 1) {
-            recyclerChat.getLayoutManager().smoothScrollToPosition(recyclerChat, null, chatAdapter.getItemCount() - 1);
+            recyclerChat.getLayoutManager().smoothScrollToPosition(recyclerChat, null, 0);
         }
-        chatViewModel.sendMessage("Bearer " + api, userId, re_id, message, type);
+        chatViewModel.sendMessage("Bearer " + api, userId, re_id, message, type, userType);
+    }
+
+
+    private void loadNextPage() {
+        chatViewModel.messageData("Bearer " + api, agentId, receiverId, String.valueOf(currentPage)).observe(this, new Observer<ChatPag>() {
+            @Override
+            public void onChanged(ChatPag chatPag) {
+                chatAdapter.removeLoadingFooter();
+                isLoading = false;
+                if (chatPag != null) {
+                    if (chatPag.getTotal() > 0) {
+                        for (int i = 0; i < chatPag.getData().size(); i++) {
+                            chat.add(chatPag.getData().get(i));
+                        }
+                        chatAdapter.notifyDataSetChanged();
+                    }
+                    if (currentPage != TOTAL_PAGES) chatAdapter.addLoadingFooter();
+                    else isLastPage = true;
+                }
+            }
+        });
     }
 
     private void loadFirstPage() {
-        chatViewModel.messageData("Bearer " + api, userId, receiverId, Config.APP_ID).observe(this, new Observer<ChatPag>() {
+        chatViewModel.messageData("Bearer " + api, agentId, receiverId, "1").observe(this, new Observer<ChatPag>() {
             @Override
             public void onChanged(ChatPag chatPag) {
                 if (chatPag != null) {
+                    TOTAL_PAGES = chatPag.getLastPage();
                     chat.clear();
                     if (chatPag.getTotal() > 0) {
-                        Collections.reverse(chatPag.getData());
                         for (int i = 0; i < chatPag.getData().size(); i++) {
                             chat.add(chatPag.getData().get(i));
                         }
                         chatAdapter.notifyDataSetChanged();
                         if (chatAdapter.getItemCount() > 1) {
-                            recyclerChat.getLayoutManager().smoothScrollToPosition(recyclerChat, null, chatAdapter.getItemCount() - 1);
+                            recyclerChat.getLayoutManager().smoothScrollToPosition(recyclerChat, null, 0);
                         }
                     }
-                    TOTAL_PAGES = chatPag.getLastPage();
+                    if (currentPage != TOTAL_PAGES) chatAdapter.addLoadingFooter();
+                    else isLastPage = true;
                 }
             }
         });
@@ -243,7 +255,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void seen() {
-        chatViewModel.seenMessage("Bearer " + api, userId, receiverId);
+        chatViewModel.seenMessage("Bearer " + api, agentId, receiverId);
     }
 
     private void chatData() {
@@ -289,26 +301,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void pickImage() {
-        Dexter.withActivity(this)
-                .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                .withListener(new PermissionListener() {
-                    @Override
-                    public void onPermissionGranted(PermissionGrantedResponse response) {
-                        Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-                        startActivityForResult(gallery, PICK_IMAGE);
-                    }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(ChatActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(ChatActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+            } else {
+                Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                startActivityForResult(gallery, PICK_IMAGE);
+            }
 
-                    @Override
-                    public void onPermissionDenied(PermissionDeniedResponse response) {
-                        Toast.makeText(ChatActivity.this, "you must be accept", Toast.LENGTH_SHORT).show();
-
-                    }
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
-
-                    }
-                }).check();
+        } else {
+            Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+            startActivityForResult(gallery, PICK_IMAGE);
+        }
     }
 
     @Override
@@ -321,50 +325,16 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void uploadFile(Uri uri) {
-        String filePath = getRealPathFromURIPath(uri, this);
-        File file = new File(filePath);
-
-        File compressedImageFile = null;
-        try {
-            compressedImageFile = new Compressor(this).compressToFile(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        RequestBody requestBody = RequestBody.create(MediaType.parse("*/*"), compressedImageFile);
-        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
-        RequestBody filename = RequestBody.create(MediaType.parse("text/plain"), file.getName());
-        RequestBody id = RequestBody.create(MediaType.parse("text/plain"), userId);
-        RequestBody reId = RequestBody.create(MediaType.parse("text/plain"), receiverId);
-        RequestBody appId = RequestBody.create(MediaType.parse("text/plain"), Config.APP_ID);
-        RequestBody ty = RequestBody.create(MediaType.parse("text/plain"), "image");
-
         pDialog.show();
-        APIInterface apiInterface = APIClient.getRetrofitInstance().create(APIInterface.class);
-        Call<ApiResponse> call = apiInterface.chatImage("Bearer " + api, fileToUpload, filename, id, reId, appId, ty);
-        call.enqueue(new Callback<ApiResponse>() {
+        chatViewModel.sendImageMessage(this, api, uri, userId, receiverId, userType).observe(this, new Observer<ApiResponse>() {
             @Override
-            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+            public void onChanged(ApiResponse apiResponse) {
                 pDialog.dismiss();
-                loadFirstPage();
-                setProfile();
-            }
-
-            @Override
-            public void onFailure(Call<ApiResponse> call, Throwable t) {
-                pDialog.dismiss();
+                if (apiResponse != null) {
+                    loadFirstPage();
+                }
             }
         });
-    }
-
-    private String getRealPathFromURIPath(Uri contentURI, Activity activity) {
-        Cursor cursor = activity.getContentResolver().query(contentURI, null, null, null, null);
-        if (cursor == null) {
-            return contentURI.getPath();
-        } else {
-            cursor.moveToFirst();
-            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-            return cursor.getString(idx);
-        }
     }
 
     private void isPurchase() {
@@ -393,7 +363,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
-                new IntentFilter(Config.PUSH_NOTIFICATION));
+                new IntentFilter(Config.MESSAGE_NOTIFICATION));
+        setProfile();
     }
 
     @Override
@@ -412,6 +383,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         imgDefaultText = findViewById(R.id.imgDefaultText);
         toolbarLayout = findViewById(R.id.toolbarLayout);
         imgPurchase = findViewById(R.id.imgPurchase);
+        imgFavourite = findViewById(R.id.imgFavourite);
+        txtRef = findViewById(R.id.txtRef);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -422,7 +395,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_send:
                 String msg = edit_send.getText().toString();
                 if (!msg.equals("")) {
-                    sendMessage(msg, "text",receiverId);
+                    sendMessage(msg, "text", receiverId);
                 } else {
                     Toast.makeText(ChatActivity.this, "You can't send empty message", Toast.LENGTH_SHORT).show();
                 }
@@ -435,12 +408,16 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 chatData();
                 break;
             case R.id.toolbarLayout:
-                intent = new Intent(ChatActivity.this, UserInfoActivity.class);
-                intent.putExtra("id", mUser.getId().toString());
-                intent.putExtra("name", mUser.getName());
-                intent.putExtra("phone", mUser.getPhone());
-                intent.putExtra("image", mUser.getImage());
-                startActivity(intent);
+                if (mUser != null) {
+                    if (mUser.getId() != null) {
+                        intent = new Intent(ChatActivity.this, UserInfoActivity.class);
+                        intent.putExtra("id", mUser.getId().toString());
+                        intent.putExtra("name", mUser.getName());
+                        intent.putExtra("phone", mUser.getPhone());
+                        intent.putExtra("image", mUser.getImage());
+                        startActivity(intent);
+                    }
+                }
                 break;
             case R.id.imgPurchase:
                 isPurchase();

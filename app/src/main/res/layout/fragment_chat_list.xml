@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Fragment.ChatListFragment">
     <RelativeLayout
         android:layout_width="match_parent"
@@ -42,12 +43,36 @@
                 android:src="@drawable/ic_baseline_menu_24" />
         </RelativeLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerChatList"
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/topBarCard"
-            tools:listitem="@layout/chat_list_row" />
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="-1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerWaitingList"
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerChatList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                    tools:listitem="@layout/chat_list_row" />
+            </LinearLayout>
+
+
+        </androidx.core.widget.NestedScrollView>
+
 
         <ProgressBar
             android:id="@+id/chatListProgressBar"

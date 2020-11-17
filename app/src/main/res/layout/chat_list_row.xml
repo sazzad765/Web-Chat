@@ -26,7 +26,7 @@
         android:layout_marginStart="5dp"
         android:layout_toEndOf="@+id/profileImage"
         android:textColor="@android:color/black"
-        android:textSize="16dp"
+        android:textSize="16sp"
         android:textStyle="bold" />
 
     <TextView

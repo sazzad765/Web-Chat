@@ -28,8 +28,10 @@ import com.team15.webchat.App.MyBroadcastReceiver;
 import com.team15.webchat.MainActivity;
 import com.team15.webchat.Model.ApiResponse;
 import com.team15.webchat.Model.Chat;
+import com.team15.webchat.Model.DeviceReg;
 import com.team15.webchat.Model.Message;
 import com.team15.webchat.R;
+import com.team15.webchat.Repositories.UserRepository;
 import com.team15.webchat.Session.SessionManager;
 
 import org.json.JSONException;
@@ -48,43 +50,45 @@ import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static com.team15.webchat.App.App.CHANNEL_1_ID;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
-
     SessionManager sessionManager;
-    APIInterface apiInterface;
+    UserRepository userRepository;
     public static List<Message> MESSAGES = new ArrayList<>();
-
 
     @Override
     public void onNewToken(@NonNull String s) {
         super.onNewToken(s);
+        userRepository = UserRepository.getInstance();
         sessionManager = new SessionManager(this);
-
         if (sessionManager.isLogin()) {
             HashMap<String, String> userInfo = sessionManager.get_user();
             String user_id = userInfo.get(SessionManager.USER_ID);
             String api_key = userInfo.get(SessionManager.API_KEY);
 
-            apiInterface = APIClient.getRetrofitInstance().create(APIInterface.class);
-            Call<ApiResponse> call = apiInterface.updateToken("Bearer " + api_key, s, user_id);
-            call.enqueue(new Callback<ApiResponse>() {
-                @Override
-                public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-
-                }
-
-                @Override
-                public void onFailure(Call<ApiResponse> call, Throwable t) {
-
-                }
-            });
+            DeviceReg reg = new DeviceReg("Bearer " + api_key, s, user_id);
+            userRepository.updateDeviceId(reg);
         }
     }
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        String messageBody = remoteMessage.getData().get("message");
         sessionManager = new SessionManager(this);
 
+        String notification_type = remoteMessage.getData().get("notification_type");
+
+        if (notification_type.equals(Config.MESSAGE_NOTIFICATION)) {
+            messageNotification(remoteMessage);
+        }else if (notification_type.equals(Config.UPDATE_NOTIFICATION)) {
+            Intent pushNotification = new Intent(Config.UPDATE_NOTIFICATION);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
+        }
+        else{
+            Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
+        }
+
+    }
+
+    private void messageNotification(RemoteMessage remoteMessage) {
         String receiverId = remoteMessage.getData().get("reciver_id");
         String sender_name = remoteMessage.getData().get("sender_name");
         String senderId = remoteMessage.getData().get("sender_id");
@@ -94,27 +98,23 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String type = remoteMessage.getData().get("type");
 
         Chat chat = new Chat(receiverId, senderId, message, Integer.parseInt(Config.APP_ID), seen, createdAt, type);
-        Message message1 = new Message(message, senderId, sender_name);
+        Message message1 = new Message(message, senderId, sender_name, receiverId);
         MESSAGES.clear();
         MESSAGES.add(message1);
-        //            if (CheckBackground.isAppIsInBackground(this)) {
-        sendChannel1Notification(this);
-//            }else {
-//                playNotificationSound(this);
-//            }
-
+        if (CheckBackground.isAppIsInBackground(this)) {
+            sendChannel1Notification(this);
+        } else {
+            playNotificationSound(this);
+        }
         if (sessionManager.isLogin()) {
-            Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
+            Intent pushNotification = new Intent(Config.MESSAGE_NOTIFICATION);
             pushNotification.putExtra("type", Config.PUSH_TYPE_USER);
             pushNotification.putExtra("chat", chat);
             LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
         }
     }
 
-
     public static void sendChannel1Notification(Context context) {
-
-
         Intent activityIntent = new Intent(context, MainActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(context,
                 0, activityIntent, 0);
@@ -126,7 +126,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         PendingIntent replyPendingIntent = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             replyIntent = new Intent(context, MyBroadcastReceiver.class);
-            replyIntent.putExtra("id", MESSAGES.get(0).getSender());
+            replyIntent.putExtra("sender", MESSAGES.get(0).getSender());
+            replyIntent.putExtra("receiver", MESSAGES.get(0).getReceiver());
             replyPendingIntent = PendingIntent.getBroadcast(context,
                     0, replyIntent, FLAG_UPDATE_CURRENT);
         } else {
@@ -185,7 +186,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
 
-    private void showNotification(String messageBody) {
+    private void showNotification(String title, String messageBody) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
@@ -196,7 +197,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
                         .setSmallIcon(R.mipmap.ic_launcher_round)
-                        .setContentTitle("New Message")
+                        .setContentTitle(title)
                         .setContentText(messageBody)
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)

@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     app:cardBackgroundColor="@color/logo_color"
     app:cardCornerRadius="5dp"
     app:cardElevation="5dp">
     <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_margin="16dp">
 
         <TextView
             android:id="@+id/btnAdd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="10dp"
+            android:layout_toStartOf="@+id/btnClose"
+            android:layout_below="@+id/listView"
             android:text="Add"
-            android:textColor="@color/white"/>
+            android:textColor="@color/white" />
 
         <ListView
             android:id="@+id/listView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/btnAdd"
+            android:layout_below="@+id/textView22"
             android:dividerHeight="10.0sp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
@@ -45,9 +47,10 @@
             android:id="@+id/textView22"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_alignTop="@+id/btnAdd"
             android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="0dp"
+            android:gravity="center"
             android:text="Choose "
             android:textColor="@color/white" />
     </RelativeLayout>

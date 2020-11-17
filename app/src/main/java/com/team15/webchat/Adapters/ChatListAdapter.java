@@ -117,12 +117,10 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public void addLoadingFooter() {
         isLoadingAdded = true;
-//        add(new ChatList());
     }
 
     public void removeLoadingFooter() {
         isLoadingAdded = false;
-
         int position = chatList.size() - 1;
         ChatList result = getItem(position);
 
@@ -132,22 +130,9 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-//    public void add(ChatList movie) {
-//        chatList.add(movie);
-//        notifyItemInserted(chatList.size() - 1);
-//    }
-
-//    public void addAll(List<ChatList> moveResults) {
-//        for (ChatList result : moveResults) {
-//            add(result);
-//        }
-//        notifyDataSetChanged();
-//    }
-
     public ChatList getItem(int position) {
         return chatList.get(position);
     }
-
 
     public class UserViewHolder extends RecyclerView.ViewHolder {
 

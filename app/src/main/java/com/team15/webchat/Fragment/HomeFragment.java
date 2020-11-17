@@ -7,11 +7,17 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.CompositePageTransformer;
+import androidx.viewpager2.widget.MarginPageTransformer;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Handler;
 import android.util.Log;
@@ -33,6 +39,7 @@ import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnima
 import com.smarteist.autoimageslider.IndicatorView.draw.controller.DrawController;
 import com.smarteist.autoimageslider.SliderAnimations;
 import com.smarteist.autoimageslider.SliderView;
+import com.team15.webchat.Adapters.PagerSliderAdapter;
 import com.team15.webchat.Adapters.SliderAdapter;
 import com.team15.webchat.App.Config;
 import com.team15.webchat.ChatActivity;
@@ -46,11 +53,13 @@ import com.team15.webchat.ViewModel.AppViewModel;
 import com.team15.webchat.ViewModel.UserViewModel;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
-    private SliderView sliderView,imageSliderSmall;
+    ViewPager2 pagerSlider;
+    private SliderView imageSliderSmall;
     private SliderAdapter adapter;
     private AppViewModel appViewModel;
     private UserViewModel userViewModel;
@@ -59,10 +68,12 @@ public class HomeFragment extends Fragment {
     private ImageView imgMenu;
     private TextView txtSellerName, txtCount;
     private Button btnWrite;
-    private String sellerId, userId,  api;
+    private String sellerId, userId, api;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     CardView sellerCardView;
-    private List<Banner>bannerList;
+    PagerSliderAdapter pagerSliderAdapter;
+    private final List<Banner> bannerList = new ArrayList<>();
+    private Handler sliderHandler = new Handler();
 
     public HomeFragment() {
 
@@ -75,7 +86,7 @@ public class HomeFragment extends Fragment {
         appViewModel = ViewModelProviders.of(getActivity()).get(AppViewModel.class);
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
 
-        sliderView = view.findViewById(R.id.imageSlider);
+//        sliderView = view.findViewById(R.id.imageSlider);
         imageSliderSmall = view.findViewById(R.id.imageSliderSmall);
         imgSeller = view.findViewById(R.id.imgSeller);
         txtSellerName = view.findViewById(R.id.txtSellerName);
@@ -83,6 +94,7 @@ public class HomeFragment extends Fragment {
         txtCount = view.findViewById(R.id.txtCount);
         imgMenu = view.findViewById(R.id.img_menu);
         sellerCardView = view.findViewById(R.id.sellerCardView);
+        pagerSlider = view.findViewById(R.id.pagerSlider);
 
         sessionManager = new SessionManager(getActivity());
         HashMap<String, String> userInfo = sessionManager.get_user();
@@ -90,16 +102,48 @@ public class HomeFragment extends Fragment {
         api = userInfo.get(SessionManager.API_KEY);
         userId = userInfo.get(SessionManager.USER_ID);
 
+        pagerSliderAdapter = new PagerSliderAdapter(getActivity(),bannerList,pagerSlider,sellerId);
+
+        pagerSlider.setAdapter(pagerSliderAdapter);
+        pagerSlider.setClipToPadding(false);
+        pagerSlider.setClipChildren(false);
+        pagerSlider.setOffscreenPageLimit(3);
+        pagerSlider.getChildAt(0).setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
+
+        CompositePageTransformer compositePageTransformer = new CompositePageTransformer();
+        compositePageTransformer.addTransformer(new MarginPageTransformer(40));
+        compositePageTransformer.addTransformer(new ViewPager2.PageTransformer() {
+            @Override
+            public void transformPage(@NonNull View page, float position) {
+                float r = 1 - Math.abs(position);
+                page.setScaleY(0.85f + r * 0.15f);
+            }
+        });
+        pagerSlider.setPageTransformer(compositePageTransformer);
+        pagerSlider.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                sliderHandler.removeCallbacks(sliderRunnable);
+                sliderHandler.postDelayed(sliderRunnable,3000);
+            }
+        });
+
+
+
+
+
+
         adapter = new SliderAdapter(getActivity(), sellerId);
-        sliderView.setSliderAdapter(adapter);
-        sliderView.setIndicatorAnimation(IndicatorAnimationType.WORM);
-        sliderView.setSliderTransformAnimation(SliderAnimations.SIMPLETRANSFORMATION);
-        sliderView.setAutoCycleDirection(SliderView.AUTO_CYCLE_DIRECTION_BACK_AND_FORTH);
-        sliderView.setIndicatorSelectedColor(Color.WHITE);
-        sliderView.setIndicatorUnselectedColor(Color.GRAY);
-        sliderView.setScrollTimeInSec(3);
-        sliderView.setAutoCycle(true);
-        sliderView.startAutoCycle();
+//        sliderView.setSliderAdapter(adapter);
+//        sliderView.setIndicatorAnimation(IndicatorAnimationType.WORM);
+//        sliderView.setSliderTransformAnimation(SliderAnimations.SIMPLETRANSFORMATION);
+//        sliderView.setAutoCycleDirection(SliderView.AUTO_CYCLE_DIRECTION_BACK_AND_FORTH);
+//        sliderView.setIndicatorSelectedColor(Color.WHITE);
+//        sliderView.setIndicatorUnselectedColor(Color.GRAY);
+//        sliderView.setScrollTimeInSec(3);
+//        sliderView.setAutoCycle(true);
+//        sliderView.startAutoCycle();
 
         imageSliderSmall.setSliderAdapter(adapter);
         imageSliderSmall.setIndicatorAnimation(IndicatorAnimationType.WORM);
@@ -111,30 +155,16 @@ public class HomeFragment extends Fragment {
         imageSliderSmall.setAutoCycle(true);
         imageSliderSmall.startAutoCycle();
 
-//        sliderView.setOnIndicatorClickListener(new DrawController.ClickListener() {
-//            @Override
-//            public void onIndicatorClicked(int position) {
-//                Toast.makeText(getActivity(), bannerList.get(position).getId().toString(), Toast.LENGTH_SHORT).show();
-//
-//                Log.i("GGG", "onIndicatorClicked: " + sliderView.getCurrentPagePosition());
-//            }
-//        });
         btnWrite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent(getActivity(), ChatActivity.class);
-//                intent.putExtra("receiverId", sellerId);
-//                startActivity(intent);
-                ((MainActivity)getActivity()).selectTab(1);
+                ((MainActivity) getActivity()).selectTab(1);
             }
         });
         sellerCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).selectTab(1);
-//                Intent intent = new Intent(getActivity(), ChatActivity.class);
-//                intent.putExtra("receiverId", sellerId);
-//                startActivity(intent);
+                ((MainActivity) getActivity()).selectTab(1);
             }
         });
         imgMenu.setOnClickListener(new View.OnClickListener() {
@@ -147,9 +177,7 @@ public class HomeFragment extends Fragment {
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().equals(Config.PUSH_NOTIFICATION)) {
-                    count();
-                }
+                count();
             }
         };
         slider();
@@ -157,6 +185,14 @@ public class HomeFragment extends Fragment {
         count();
         return view;
     }
+
+    private Runnable sliderRunnable = new Runnable() {
+        @Override
+        public void run() {
+            pagerSlider.setCurrentItem(pagerSlider.getCurrentItem() + 1,true);
+
+        }
+    };
 
     private void setSellerProfile() {
         appViewModel.getSeller("Bearer " + api, sellerId).observe(getActivity(), new Observer<User>() {
@@ -174,8 +210,11 @@ public class HomeFragment extends Fragment {
         appViewModel.getBanner().observe(getActivity(), new Observer<List<Banner>>() {
             @Override
             public void onChanged(List<Banner> banners) {
-                bannerList = banners;
-                adapter.renewItems(banners);
+                if (banners!=null) {
+                    bannerList.addAll(banners);
+                    pagerSliderAdapter.notifyDataSetChanged();
+                    adapter.renewItems(banners);
+                }
             }
         });
     }
@@ -184,7 +223,7 @@ public class HomeFragment extends Fragment {
         appViewModel.getSeenCount("Bearer " + api, userId, sellerId).observe(getActivity(), new Observer<JsonObject>() {
             @Override
             public void onChanged(JsonObject jsonObject) {
-                if (jsonObject!=null) {
+                if (jsonObject != null) {
                     int count = Integer.parseInt(jsonObject.get("unseen_message").toString());
                     if (count != 0) {
                         txtCount.setText("you got new message");
@@ -201,7 +240,7 @@ public class HomeFragment extends Fragment {
         super.onResume();
         count();
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mRegistrationBroadcastReceiver,
-                new IntentFilter(Config.PUSH_NOTIFICATION));
+                new IntentFilter(Config.MESSAGE_NOTIFICATION));
     }
 
     @Override
@@ -242,8 +281,8 @@ public class HomeFragment extends Fragment {
         popup.show();
     }
 
-    private void isOnline(String status){
-        userViewModel.isOnline("Bearer " + api,userId,status);
+    private void isOnline(String status) {
+        userViewModel.isOnline("Bearer " + api, userId, status);
     }
 
 }

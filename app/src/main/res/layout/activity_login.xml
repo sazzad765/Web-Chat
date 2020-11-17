@@ -90,7 +90,7 @@
                     android:ems="10"
                     android:hint="@string/enter_your_phone_number"
                     android:inputType="phone"
-                    android:theme="@style/login_editText" />
+                    android:textSize="15sp" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -106,7 +106,7 @@
                         android:background="@drawable/login_edit_text"
                         android:hint="@string/enter_password"
                         android:inputType="textPassword"
-                        android:theme="@style/login_editText" />
+                        android:textSize="15sp" />
 
                     <ImageView
                         android:id="@+id/imgShowPass"

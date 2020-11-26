@@ -63,7 +63,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:background="@color/logo_color" />
+            android:background="@drawable/login_background" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imgUserProfile"
@@ -111,7 +111,8 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView1"
-                android:layout_width="150dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="100dp"
                 android:layout_marginEnd="8dp">
 
@@ -139,7 +140,8 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView2"
-                android:layout_width="150dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="100dp"
                 android:layout_marginStart="8dp">
 
@@ -171,7 +173,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/layout1"
-            android:layout_margin="16dp"
             android:padding="16dp">
 
 
@@ -213,30 +214,31 @@
                 android:id="@+id/txtPointIn"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
+                android:layout_marginEnd="10dp"
                 android:background="@drawable/note_view"
                 android:text="+"
                 android:theme="@style/txt_round"
                 app:layout_constraintBottom_toBottomOf="@+id/editPoint"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnGift"
                 app:layout_constraintTop_toTopOf="@+id/editPoint" />
+
 
             <Button
                 android:id="@+id/btnGift"
-                android:layout_width="110dp"
+                android:layout_width="wrap_content"
                 android:layout_height="30dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/note_view"
+                android:background="@drawable/round_button"
                 android:text="Gift"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
-                app:layout_constraintEnd_toEndOf="@+id/txtPointIn"
-                app:layout_constraintTop_toBottomOf="@+id/txtPointIn" />
-
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/editPoint" />
 
             <TextView
                 android:id="@+id/textView26"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="100dp"
                 android:text="Note:"
                 android:theme="@style/txt_bold_small_title"
                 app:layout_constraintStart_toStartOf="parent"
@@ -255,7 +257,86 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/textView26"
                 app:layout_constraintTop_toBottomOf="@+id/textView26" />
+
+            <TextView
+                android:id="@+id/textView13"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:theme="@style/txt_bold_small_title"
+                android:text="Purchase Point:"
+                app:layout_constraintStart_toStartOf="@+id/textView20"
+                app:layout_constraintTop_toTopOf="@+id/editPurchasePoint" />
+
+            <TextView
+                android:id="@+id/txtPurchaseIn"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/note_view"
+                android:text="+"
+                android:theme="@style/txt_round"
+                app:layout_constraintBottom_toBottomOf="@+id/editPurchasePoint"
+                app:layout_constraintEnd_toStartOf="@+id/btnPurchasePoint"
+                app:layout_constraintTop_toTopOf="@+id/editPurchasePoint" />
+
+            <EditText
+                android:id="@+id/editPurchasePoint"
+                android:layout_width="50dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/login_edit_text"
+                android:ems="10"
+                android:inputType="number"
+                android:text="2"
+                app:layout_constraintEnd_toStartOf="@+id/txtPurchaseIn"
+                app:layout_constraintTop_toBottomOf="@+id/btnGift" />
+
+            <TextView
+                android:id="@+id/txtPurchaseDe"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/note_view"
+                android:text="-"
+                android:theme="@style/txt_round"
+                app:layout_constraintBottom_toBottomOf="@+id/editPurchasePoint"
+                app:layout_constraintEnd_toStartOf="@+id/editPurchasePoint"
+                app:layout_constraintTop_toTopOf="@+id/editPurchasePoint" />
+
+            <Button
+                android:id="@+id/btnPurchasePoint"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:background="@drawable/round_button"
+                android:text="Save"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/editPurchasePoint" />
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <Button
+            android:id="@+id/btnTransfer"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="10dp"
+            android:textSize="12sp"
+            android:textAllCaps="false"
+            android:background="@color/white"
+            android:text="transfer" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_centerInParent="true" />
 
     </RelativeLayout>
     <!--    </ScrollView>-->

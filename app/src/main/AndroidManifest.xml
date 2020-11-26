@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -22,8 +22,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-
-        <activity android:name=".ChangePasswordActivity"/>
+        <activity android:name=".OTPVerificationActivity"></activity>
+        <activity android:name=".ForgetPasswordActivity" />
+        <activity android:name=".ReferralPointActivity" />
+        <activity android:name=".UserPurchaseActivity" />
+        <activity android:name=".ChangePasswordActivity" />
         <activity android:name=".UserInfoActivity" />
         <activity android:name=".ImageViewActivity" />
         <activity android:name=".ChatDataActivity" />

@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.github.chrisbanes.photoview.PhotoView;
+import com.github.chrisbanes.photoview.PhotoViewAttacher;
 import com.team15.webchat.App.ImageDownload;
 
 import static android.bluetooth.BluetoothGattCharacteristic.PERMISSION_WRITE;
@@ -19,11 +21,14 @@ import static android.bluetooth.BluetoothGattCharacteristic.PERMISSION_WRITE;
 public class ImageViewActivity extends AppCompatActivity {
 
     private Button btnSave;
-    ImageView imgChat,imgBack;
+    ImageView imgBack;
+    PhotoView imgChat;
+    PhotoViewAttacher photoViewAttacher ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_view);
+
         btnSave = findViewById(R.id.btnSave);
         imgChat= findViewById(R.id.imgChat);
         imgBack = findViewById(R.id.imgBack);
@@ -34,6 +39,9 @@ public class ImageViewActivity extends AppCompatActivity {
         Glide.with(this)
                 .load(url)
                 .into(imgChat);
+        photoViewAttacher = new PhotoViewAttacher(imgChat);
+
+        photoViewAttacher.update();
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override

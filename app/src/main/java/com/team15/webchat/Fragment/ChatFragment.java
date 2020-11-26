@@ -29,6 +29,7 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -37,6 +38,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.gson.JsonObject;
 import com.team15.webchat.Adapters.ChatAdapter;
 import com.team15.webchat.Adapters.PaginationScrollListener;
 import com.team15.webchat.Api.APIClient;
@@ -79,7 +81,7 @@ public class ChatFragment extends Fragment {
     private String api, userId, receiverId, userType;
     private EditText edit_send;
     private ImageView btn_send, profile_image, imgSelect;
-    private TextView username;
+    private TextView username,txt_waiting_position;
     private ProgressDialog pDialog;
     User mUser;
 
@@ -164,8 +166,9 @@ public class ChatFragment extends Fragment {
         });
 
         loadFirstPage();
-        setProfile();
+//        setProfile();
         seen();
+        waitingPosition();
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -180,6 +183,7 @@ public class ChatFragment extends Fragment {
                     }
                     seen();
                 }
+                waitingPosition();
             }
         };
         return view;
@@ -187,22 +191,41 @@ public class ChatFragment extends Fragment {
 
     private final Runnable m_Runnable = new Runnable() {
         public void run() {
+            waitingPosition();
             mHandler.postDelayed(m_Runnable, 50000);
         }
     };
 
-    private void setProfile() {
-        appViewModel.getSeller("Bearer " + api, receiverId).observe(getActivity(), new Observer<User>() {
+    private void waitingPosition(){
+        appViewModel.getPosition("Bearer " + api,userId).observe(getActivity(), new Observer<JsonObject>() {
             @Override
-            public void onChanged(User user) {
-                if (user != null) {
-                    mUser = user;
-                    username.setText(user.getName());
-                    Glide.with(getActivity()).load(user.getImage()).apply(RequestOptions.centerCropTransform()).into(profile_image);
+            public void onChanged(JsonObject object) {
+                if (object!=null){
+                    int count = Integer.parseInt(object.get("position").toString());
+                    if (count > 0) {
+                        txt_waiting_position.setText("Your Waiting position: "+count);
+                        txt_waiting_position.setVisibility(View.VISIBLE);
+                    } else {
+                        txt_waiting_position.setVisibility(View.GONE);
+                    }
                 }
+
             }
         });
     }
+
+//    private void setProfile() {
+//        appViewModel.getSeller("Bearer " + api, receiverId).observe(getActivity(), new Observer<User>() {
+//            @Override
+//            public void onChanged(User user) {
+//                if (user != null) {
+//                    mUser = user;
+//                    username.setText(user.getName());
+//                    Glide.with(getActivity()).load(user.getImage()).apply(RequestOptions.centerCropTransform()).into(profile_image);
+//                }
+//            }
+//        });
+//    }
 
     public void sendMessage(String message, String senderId, String receiverId, String type) {
         Chat chat1 = new Chat(receiverId, senderId, message, Integer.parseInt(Config.APP_ID), 1, " ", type);
@@ -305,6 +328,7 @@ public class ChatFragment extends Fragment {
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(Config.MESSAGE_NOTIFICATION));
         m_Runnable.run();
+        waitingPosition();
     }
 
     @Override
@@ -321,5 +345,6 @@ public class ChatFragment extends Fragment {
         profile_image = v.findViewById(R.id.profile_image);
         username = v.findViewById(R.id.username);
         imgSelect = v.findViewById(R.id.imgSelect);
+        txt_waiting_position= v.findViewById(R.id.txt_waiting_position);
     }
 }

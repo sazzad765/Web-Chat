@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.team15.webchat.Api.APIClient;
 import com.team15.webchat.Api.APIInterface;
@@ -12,6 +13,10 @@ import com.team15.webchat.App.Config;
 import com.team15.webchat.Model.ApiResponse;
 import com.team15.webchat.Model.Banner;
 import com.team15.webchat.Model.PartialsInfo;
+import com.team15.webchat.Model.ProductList;
+import com.team15.webchat.Model.PurchaseList;
+import com.team15.webchat.Model.ReferralPointList;
+import com.team15.webchat.Model.SellerList;
 import com.team15.webchat.Model.User;
 
 import java.util.ArrayList;
@@ -25,8 +30,10 @@ import retrofit2.Response;
 public class AppRepository extends Observable {
     private APIInterface apiInterface;
     private static AppRepository appRepository;
-    final MutableLiveData<User> userProfile = new MutableLiveData<>();
     MutableLiveData<List<Banner>> bannerData = new MutableLiveData<>();
+    MutableLiveData<ProductList.ProductListPaging> productListMutableLiveData = new MutableLiveData<>();
+    MutableLiveData<PurchaseList.PurchaseListPaging> purchaseListMutableLiveData = new MutableLiveData<>();
+    MutableLiveData<ReferralPointList.ReferralPointPaging> referralPointPagingMutableLiveData = new MutableLiveData<>();
 
 
     public static AppRepository getInstance() {
@@ -67,8 +74,72 @@ public class AppRepository extends Observable {
         return bannerData;
     }
 
-    public LiveData<User> getSeller(String token, String userId) {
+    public LiveData<ProductList.ProductListPaging> getProduct(String token, String page) {
+        Call<ProductList.ProductListPaging> call2 = apiInterface.getProduct(token, Config.APP_ID, page);
+        call2.enqueue(new Callback<ProductList.ProductListPaging>() {
+            @Override
+            public void onResponse(Call<ProductList.ProductListPaging> call, Response<ProductList.ProductListPaging> response) {
+                productListMutableLiveData.postValue(response.body());
+            }
 
+            @Override
+            public void onFailure(Call<ProductList.ProductListPaging> call, Throwable t) {
+
+            }
+        });
+        return productListMutableLiveData;
+    }
+
+    public LiveData<PurchaseList.PurchaseListPaging> getSellerSell(String token, String type, String page) {
+        Call<PurchaseList.PurchaseListPaging> call2 = apiInterface.getSellerSell(token, type, Config.APP_ID, page);
+        call2.enqueue(new Callback<PurchaseList.PurchaseListPaging>() {
+            @Override
+            public void onResponse(Call<PurchaseList.PurchaseListPaging> call, Response<PurchaseList.PurchaseListPaging> response) {
+                purchaseListMutableLiveData.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<PurchaseList.PurchaseListPaging> call, Throwable t) {
+
+            }
+        });
+        return purchaseListMutableLiveData;
+    }
+
+    public LiveData<PurchaseList.PurchaseListPaging> getUserPurchase(String token, String user_id, String page) {
+        Call<PurchaseList.PurchaseListPaging> call2 = apiInterface.getUserPurchase(token, user_id, Config.APP_ID, page);
+        call2.enqueue(new Callback<PurchaseList.PurchaseListPaging>() {
+            @Override
+            public void onResponse(Call<PurchaseList.PurchaseListPaging> call, Response<PurchaseList.PurchaseListPaging> response) {
+                purchaseListMutableLiveData.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<PurchaseList.PurchaseListPaging> call, Throwable t) {
+
+            }
+        });
+        return purchaseListMutableLiveData;
+    }
+
+    public LiveData<ReferralPointList.ReferralPointPaging> getReferralPointList(String token, String user_id, String page) {
+        Call<ReferralPointList.ReferralPointPaging> call2 = apiInterface.getReferralPointList(token, user_id, page);
+        call2.enqueue(new Callback<ReferralPointList.ReferralPointPaging>() {
+            @Override
+            public void onResponse(Call<ReferralPointList.ReferralPointPaging> call, Response<ReferralPointList.ReferralPointPaging> response) {
+                referralPointPagingMutableLiveData.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<ReferralPointList.ReferralPointPaging> call, Throwable t) {
+
+            }
+        });
+        return referralPointPagingMutableLiveData;
+    }
+
+    public LiveData<User> getSeller(String token, String userId) {
+        final MutableLiveData<User> userProfile = new MutableLiveData<>();
         Call<User> call2 = apiInterface.getUser(token, userId);
         call2.enqueue(new Callback<User>() {
             @Override
@@ -85,13 +156,14 @@ public class AppRepository extends Observable {
     }
 
     public LiveData<ApiResponse> updateNote(String token, String userId, String note) {
-        final MutableLiveData<ApiResponse> data= new MutableLiveData<>();
+        final MutableLiveData<ApiResponse> data = new MutableLiveData<>();
         Call<ApiResponse> call2 = apiInterface.updateNote(token, userId, note);
         call2.enqueue(new Callback<ApiResponse>() {
             @Override
             public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
                 data.postValue(response.body());
             }
+
             @Override
             public void onFailure(Call<ApiResponse> call, Throwable t) {
                 call.cancel();
@@ -100,14 +172,83 @@ public class AppRepository extends Observable {
         return data;
     }
 
-    public LiveData<ApiResponse> purchase(String token, String userId) {
-        final MutableLiveData<ApiResponse> data= new MutableLiveData<>();
-        Call<ApiResponse> call2 = apiInterface.purchase(token, userId);
+    public LiveData<ApiResponse> transferUser(String token, String userId, String seller_id) {
+        final MutableLiveData<ApiResponse> data = new MutableLiveData<>();
+        Call<ApiResponse> call2 = apiInterface.transferUser(token,Config.APP_ID, userId, seller_id);
         call2.enqueue(new Callback<ApiResponse>() {
             @Override
             public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
                 data.postValue(response.body());
             }
+
+            @Override
+            public void onFailure(Call<ApiResponse> call, Throwable t) {
+                call.cancel();
+            }
+        });
+        return data;
+    }
+
+    public LiveData<ApiResponse> cancelPurchase(String token, String sellId) {
+        final MutableLiveData<ApiResponse> data = new MutableLiveData<>();
+        Call<ApiResponse> call2 = apiInterface.cancelPurchase(token, Config.APP_ID, sellId);
+        call2.enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                data.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse> call, Throwable t) {
+                call.cancel();
+            }
+        });
+        return data;
+    }
+
+    public LiveData<ApiResponse> acceptPurchase(String token, String sellId) {
+        final MutableLiveData<ApiResponse> data = new MutableLiveData<>();
+        Call<ApiResponse> call2 = apiInterface.acceptPurchase(token, Config.APP_ID, sellId);
+        call2.enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                data.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse> call, Throwable t) {
+                call.cancel();
+            }
+        });
+        return data;
+    }
+
+    public LiveData<ApiResponse> sellRequest(String token, String userId, String product_id, String game_id) {
+        final MutableLiveData<ApiResponse> data = new MutableLiveData<>();
+        Call<ApiResponse> call2 = apiInterface.sellRequest(token, userId, product_id, game_id, Config.APP_ID);
+        call2.enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                data.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse> call, Throwable t) {
+                call.cancel();
+            }
+        });
+        return data;
+    }
+
+    public LiveData<ApiResponse> purchase(String token, String userId, String sellerId) {
+        final MutableLiveData<ApiResponse> data = new MutableLiveData<>();
+        Call<ApiResponse> call2 = apiInterface.purchase(token, userId, sellerId);
+        call2.enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                data.postValue(response.body());
+            }
+
             @Override
             public void onFailure(Call<ApiResponse> call, Throwable t) {
                 call.cancel();
@@ -117,13 +258,14 @@ public class AppRepository extends Observable {
     }
 
     public LiveData<ApiResponse> updatePoint(String token, String userId, String point) {
-        final MutableLiveData<ApiResponse> data= new MutableLiveData<>();
+        final MutableLiveData<ApiResponse> data = new MutableLiveData<>();
         Call<ApiResponse> call2 = apiInterface.updatePoint(token, userId, point);
         call2.enqueue(new Callback<ApiResponse>() {
             @Override
             public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
                 data.postValue(response.body());
             }
+
             @Override
             public void onFailure(Call<ApiResponse> call, Throwable t) {
                 call.cancel();
@@ -132,9 +274,9 @@ public class AppRepository extends Observable {
         return data;
     }
 
-    public LiveData<ApiResponse> password_change(String token, String userId, String old_password,String new_password) {
+    public LiveData<ApiResponse> purchasePoint(String token, String userId, String point) {
         final MutableLiveData<ApiResponse> data = new MutableLiveData<>();
-        Call<ApiResponse> call2 = apiInterface.password_change(token, userId, old_password,new_password);
+        Call<ApiResponse> call2 = apiInterface.purchasePoint(token, userId, point);
         call2.enqueue(new Callback<ApiResponse>() {
             @Override
             public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
@@ -149,10 +291,27 @@ public class AppRepository extends Observable {
         return data;
     }
 
-        public LiveData<JsonObject> getPosition(String token, String userId, String selle_id) {
+    public LiveData<ApiResponse> password_change(String token, String userId, String old_password, String new_password) {
+        final MutableLiveData<ApiResponse> data = new MutableLiveData<>();
+        Call<ApiResponse> call2 = apiInterface.password_change(token, userId, old_password, new_password);
+        call2.enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                data.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse> call, Throwable t) {
+                call.cancel();
+            }
+        });
+        return data;
+    }
+
+    public LiveData<JsonObject> getPosition(String token, String userId) {
 
         final MutableLiveData<JsonObject> liveData = new MutableLiveData<>();
-        Call<JsonObject> call2 = apiInterface.waitingTime(token, userId, selle_id, Config.APP_ID);
+        Call<JsonObject> call2 = apiInterface.waitingTime(token, userId, Config.APP_ID);
         call2.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -161,6 +320,24 @@ public class AppRepository extends Observable {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                call.cancel();
+            }
+        });
+        return liveData;
+    }
+
+    public LiveData<List<SellerList>> getSellerList(String token) {
+
+        final MutableLiveData<List<SellerList>> liveData = new MutableLiveData<>();
+        Call<List<SellerList>> call2 = apiInterface.getSellerList(token,Config.APP_ID);
+        call2.enqueue(new Callback<List<SellerList>>() {
+            @Override
+            public void onResponse(Call<List<SellerList>> call, Response<List<SellerList>> response) {
+                liveData.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<List<SellerList>> call, Throwable t) {
                 call.cancel();
             }
         });

@@ -14,19 +14,20 @@
     <style name="toolbar_textview" parent="Widget.AppCompat.TextView">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:paddingStart">10dp</item>
-        <item name="android:textSize">15sp</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="login_editText" parent="Widget.AppCompat.EditText">
         <item name="android:textSize">15sp</item>
     </style>
 
-    <style name="EditTextProfileUpdate" parent="Widget.AppCompat.EditText">
-        <item name="android:textSize">14sp</item>
+<!--    <style name="EditTextProfileUpdate" parent="Widget.AppCompat.EditText">-->
+<!--        <item name="android:textSize">14sp</item>-->
 
-        <item name="android:layout_marginTop">5dp</item>
-        <item name="android:paddingStart">10dp</item>
-    </style>
+<!--        <item name="android:layout_marginTop">5dp</item>-->
+<!--        <item name="android:paddingStart">10dp</item>-->
+<!--    </style>-->
 
     <style name="txt_profile" parent="Widget.AppCompat.TextView">
         <item name="android:textSize">13sp</item>
@@ -40,6 +41,7 @@
     </style>
 
     <style name="ChatEditText" parent="Widget.AppCompat.EditText">
+        <item name="android:textSize">15sp</item>
         <item name="android:textCursorDrawable">@color/white</item>
         <item name="android:textColorHint">#50ffffff</item>
     </style>

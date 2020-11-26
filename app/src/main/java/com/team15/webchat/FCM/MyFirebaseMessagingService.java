@@ -71,6 +71,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
+        String from = remoteMessage.getFrom();
         sessionManager = new SessionManager(this);
 
         String notification_type = remoteMessage.getData().get("notification_type");
@@ -80,10 +81,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }else if (notification_type.equals(Config.UPDATE_NOTIFICATION)) {
             Intent pushNotification = new Intent(Config.UPDATE_NOTIFICATION);
             LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
+            playNotificationSound(this);
         }
         else{
             Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
             LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
+            playNotificationSound(this);
         }
 
     }
@@ -163,7 +166,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setContentIntent(contentIntent)
                 .setAutoCancel(true)
-                .setOnlyAlertOnce(true);
+                .setOnlyAlertOnce(false);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(CHANNEL_1_ID,

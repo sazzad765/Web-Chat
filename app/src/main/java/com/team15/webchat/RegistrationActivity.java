@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -50,14 +51,19 @@ private ProgressBar regProgressBar;
             editTextPersonName.setError("FIELD CANNOT BE EMPTY");
             return;
         }
-        if (phone.length() == 0) {
+        if (phone.length()<11){
             editTextPhone.requestFocus();
-            editTextPhone.setError("FIELD CANNOT BE EMPTY");
+            editTextPhone.setError("Enter valid number");
             return;
         }
-        if (phone.length() < 10) {
+        if (phone.length()>11){
             editTextPhone.requestFocus();
-            editTextPhone.setError("enter valid number");
+            editTextPhone.setError("Enter valid number");
+            return;
+        }
+        if (!TextUtils.isDigitsOnly(phone)){
+            editTextPhone.requestFocus();
+            editTextPhone.setError("Enter valid number");
             return;
         }
         if (password.length() == 0) {

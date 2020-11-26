@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -33,6 +34,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static final int MSG_TYPE_RIGHT = 2;
     public static final int IMG_TYPE_RIGHT = 3;
     public static final int IMG_TYPE_LEFT = 4;
+    public static final int BOT_MSG_LEFT = 5;
 
     private boolean isLoadingAdded = false;
 
@@ -66,6 +68,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 View imgLeft = inflater.inflate(R.layout.image_item_left, parent, false);
                 viewHolder = new ChatAdapter.LeftImageViewHolder(imgLeft);
                 break;
+            case BOT_MSG_LEFT:
+                View defChat = inflater.inflate(R.layout.default_chat_layout, parent, false);
+                viewHolder = new ChatAdapter.LeftImageViewHolder(defChat);
+                break;
             case LOADING:
                 View viewLoading = inflater.inflate(R.layout.item_progress, parent, false);
                 viewHolder = new ChatAdapter.LoadingViewHolder(viewLoading);
@@ -80,8 +86,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         final Chat chat = chatList.get(position);
         switch (getItemViewType(position)) {
             case MSG_TYPE_RIGHT:
-                ChatAdapter.RightChatViewHolder rightViewHolder = (ChatAdapter.RightChatViewHolder) holder;
+                final ChatAdapter.RightChatViewHolder rightViewHolder = (ChatAdapter.RightChatViewHolder) holder;
                 rightViewHolder.show_message.setText(chat.getMessage());
+                rightViewHolder.txt_date.setText(chat.getCreatedAt());
+
                 if (position == 0) {
                     rightViewHolder.txt_seen.setVisibility(View.VISIBLE);
                     if (chat.getSeen() == 0) {
@@ -92,12 +100,37 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 } else {
                     rightViewHolder.txt_seen.setVisibility(View.GONE);
                 }
+                rightViewHolder.show_message.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (rightViewHolder.txt_date.getVisibility() == View.VISIBLE) {
+                            rightViewHolder.txt_date.setVisibility(View.GONE);
+                        } else {
+                            rightViewHolder.txt_date.setVisibility(View.VISIBLE);
+
+                        }
+                    }
+                });
 
                 break;
+
             case MSG_TYPE_LEFT:
-                ChatAdapter.LeftChatViewHolder leftViewHolder = (ChatAdapter.LeftChatViewHolder) holder;
+                final ChatAdapter.LeftChatViewHolder leftViewHolder = (ChatAdapter.LeftChatViewHolder) holder;
                 leftViewHolder.show_message.setText(chat.getMessage());
+                leftViewHolder.txt_date.setText(chat.getCreatedAt());
+                leftViewHolder.show_message.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (leftViewHolder.txt_date.getVisibility() == View.VISIBLE) {
+                            leftViewHolder.txt_date.setVisibility(View.GONE);
+                        } else {
+                            leftViewHolder.txt_date.setVisibility(View.VISIBLE);
+
+                        }
+                    }
+                });
                 break;
+
             case IMG_TYPE_RIGHT:
                 ChatAdapter.RightImageViewHolder rightImageViewHolder = (ChatAdapter.RightImageViewHolder) holder;
                 Glide.with(context)
@@ -108,11 +141,12 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     public void onClick(View v) {
                         Intent intent = new Intent(context, ImageViewActivity.class)
                                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent.putExtra("url",chat.getMessage());
+                        intent.putExtra("url", chat.getMessage());
                         context.startActivity(intent);
                     }
                 });
                 break;
+
             case IMG_TYPE_LEFT:
                 ChatAdapter.LeftImageViewHolder leftImageViewHolder = (ChatAdapter.LeftImageViewHolder) holder;
                 Glide.with(context)
@@ -122,11 +156,18 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(context, ImageViewActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent.putExtra("url",chat.getMessage());
+                        intent.putExtra("url", chat.getMessage());
                         context.startActivity(intent);
                     }
                 });
                 break;
+
+            case BOT_MSG_LEFT:
+                ChatAdapter.LeftBotChatViewHolder leftBotChatViewHolder = (ChatAdapter.LeftBotChatViewHolder) holder;
+
+
+                break;
+
             case LOADING:
                 ChatAdapter.LoadingViewHolder loadingViewHolder = (ChatAdapter.LoadingViewHolder) holder;
                 loadingViewHolder.progressBar.setVisibility(View.VISIBLE);
@@ -152,6 +193,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             notifyItemRemoved(position);
         }
     }
+
     public Chat getItem(int position) {
         return chatList.get(position);
     }
@@ -164,14 +206,18 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (chatList.get(position).getSenderId().equals(userId)) {
                 if (chatList.get(position).getType().equals("image")) {
                     return IMG_TYPE_RIGHT;
-                } else {
+                }else if (chatList.get(position).getType().equals("text")) {
                     return MSG_TYPE_RIGHT;
+                }else {
+                    return BOT_MSG_LEFT;
                 }
             } else {
                 if (chatList.get(position).getType().equals("image")) {
                     return IMG_TYPE_LEFT;
-                } else {
+                } else if (chatList.get(position).getType().equals("text")) {
                     return MSG_TYPE_LEFT;
+                } else {
+                    return BOT_MSG_LEFT;
                 }
             }
         }
@@ -181,21 +227,25 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public class RightChatViewHolder extends RecyclerView.ViewHolder {
         public TextView show_message;
         public TextView txt_seen;
+        public TextView txt_date;
 
         public RightChatViewHolder(View itemView) {
             super(itemView);
             show_message = itemView.findViewById(R.id.show_message);
             txt_seen = itemView.findViewById(R.id.txt_seen);
+            txt_date = itemView.findViewById(R.id.txt_date);
         }
     }
 
     public class LeftChatViewHolder extends RecyclerView.ViewHolder {
         public TextView show_message;
         public TextView txt_seen;
+        public TextView txt_date;
 
         public LeftChatViewHolder(View itemView) {
             super(itemView);
             show_message = itemView.findViewById(R.id.show_message);
+            txt_date = itemView.findViewById(R.id.txt_date);
         }
     }
 
@@ -214,6 +264,17 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         public LeftImageViewHolder(View itemView) {
             super(itemView);
             chatImageView = itemView.findViewById(R.id.chatImageView);
+        }
+    }
+
+    public class LeftBotChatViewHolder extends RecyclerView.ViewHolder {
+        public ListView listView;
+        public TextView txt_date;
+
+        public LeftBotChatViewHolder(View itemView) {
+            super(itemView);
+            listView = itemView.findViewById(R.id.listView);
+            txt_date = itemView.findViewById(R.id.txt_date);
         }
     }
 

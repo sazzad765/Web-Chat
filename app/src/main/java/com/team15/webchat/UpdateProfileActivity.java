@@ -29,6 +29,7 @@ import com.bumptech.glide.Glide;
 import com.team15.webchat.Api.APIClient;
 import com.team15.webchat.Api.APIInterface;
 import com.team15.webchat.Model.ApiResponse;
+import com.team15.webchat.Model.ShortProfile;
 import com.team15.webchat.Model.User;
 import com.team15.webchat.Session.SessionManager;
 import com.team15.webchat.ViewModel.UserViewModel;
@@ -77,9 +78,9 @@ public class UpdateProfileActivity extends AppCompatActivity {
 
     private void setProfile() {
         updateProgressBar.setVisibility(View.VISIBLE);
-        userViewModel.getUser("Bearer " + api, userId).observe(this, new Observer<User>() {
+        userViewModel.getShortProfile("Bearer " + api, userId).observe(this, new Observer<ShortProfile>() {
             @Override
-            public void onChanged(User user) {
+            public void onChanged(ShortProfile user) {
                 if (user!=null) {
                     updateProgressBar.setVisibility(View.INVISIBLE);
 

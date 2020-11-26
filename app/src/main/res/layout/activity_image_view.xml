@@ -25,6 +25,7 @@
                 android:layout_centerVertical="true"
                 android:src="@drawable/abc_vector_test" />
 
+
             <Button
                 android:id="@+id/btnSave"
                 android:layout_width="wrap_content"
@@ -37,11 +38,11 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-    <ImageView
+    <com.github.chrisbanes.photoview.PhotoView
         android:id="@+id/imgChat"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/colorAccent"
+        android:background="@drawable/login_background"
         android:adjustViewBounds="true"
         android:contentDescription="@null"
         android:scaleType="fitCenter"
@@ -49,6 +50,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar3"
-        app:srcCompat="@drawable/ic_launcher_foreground" />
+        app:srcCompat="@drawable/ic_launcher_foreground"/>
+<!--    <ImageView-->
+<!--        android:id="@+id/imgChat"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:background="@color/colorAccent"-->
+<!--        android:adjustViewBounds="true"-->
+<!--        android:contentDescription="@null"-->
+<!--        android:scaleType="fitCenter"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/toolbar3"-->
+<!--        app:srcCompat="@drawable/ic_launcher_foreground" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

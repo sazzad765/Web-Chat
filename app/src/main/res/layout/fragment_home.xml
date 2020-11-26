@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/login_background"
     tools:context=".Fragment.HomeFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -14,7 +15,7 @@
         <RelativeLayout
             android:id="@+id/topBarCard"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="55dp"
             android:background="@color/colorPrimary"
             android:padding="5dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -23,8 +24,8 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imageView2"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
                 android:src="@mipmap/ic_launcher" />
@@ -36,6 +37,8 @@
                 android:layout_marginStart="5dp"
                 android:layout_toEndOf="@+id/imageView2"
                 android:text="Chat App"
+                android:textSize="17sp"
+                android:textStyle="bold"
                 android:textColor="@color/white"
                 android:theme="@style/toolbar_textview" />
 
@@ -55,18 +58,21 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:padding="5dp"
+            app:cardCornerRadius="5dp"
+            android:elevation="5dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/topBarCard">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/imgSeller"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
                     android:layout_alignParentTop="true"
                     android:layout_margin="10dp"
                     android:src="@drawable/ic_launcher_foreground"
@@ -81,8 +87,8 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
                     android:layout_toEndOf="@+id/imgSeller"
-                    android:textColor="@android:color/black"
-                    android:textSize="20sp"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -107,6 +113,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="16dp"
             app:cardCornerRadius="6dp"
+            app:cardBackgroundColor="@color/colorPrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/sellerCardView">
@@ -134,10 +141,9 @@
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/pagerSlider"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:maxHeight="300dp"
-            android:paddingStart="32dp"
-            android:paddingEnd="32dp"
+            android:layout_height="250dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="10dp"
             app:layout_constraintBottom_toTopOf="@+id/btnWrite"

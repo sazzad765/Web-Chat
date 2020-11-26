@@ -67,6 +67,11 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 ChatListAdapter.UserViewHolder userViewHolder = (ChatListAdapter.UserViewHolder) holder;
                 userViewHolder.txtName.setText(chatList1.getName());
                 userViewHolder.txtMessage.setText(chatList1.getLastMessage());
+                if (chatList1.getFavorite()==1){
+                    userViewHolder.imgFav.setVisibility(View.VISIBLE);
+                }else {
+                    userViewHolder.imgFav.setVisibility(View.GONE);
+                }
                 if (chatList1.getSenderId().equals(userId)) {
                     userViewHolder.txtMessage.setTypeface(null, Typeface.NORMAL);
                     userViewHolder.count.setVisibility(View.GONE);
@@ -137,7 +142,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public class UserViewHolder extends RecyclerView.ViewHolder {
 
         private TextView txtName, txtMessage, count;
-        private ImageView profileImage, active_status;
+        private ImageView profileImage, active_status,imgFav;
 
         public UserViewHolder(View itemView) {
             super(itemView);
@@ -146,6 +151,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             txtName = itemView.findViewById(R.id.name);
             txtMessage = itemView.findViewById(R.id.txtMessage);
             count = itemView.findViewById(R.id.count);
+            imgFav = itemView.findViewById(R.id.imgFav);
         }
     }
 

@@ -99,9 +99,10 @@ public class ActiveListFragment extends Fragment {
                     activeListAdapter.removeLoadingFooter();
                     isLoading = false;
                     if (activeUser.getTotal() > 0) {
-                        for (int i = 0; i < activeUser.getData().size(); i++) {
-                            results.add(activeUser.getData().get(i));
-                        }
+                        results.addAll(activeUser.getData());
+//                        for (int i = 0; i < activeUser.getData().size(); i++) {
+//                            results.add(activeUser.getData().get(i));
+//                        }
                         activeListAdapter.notifyDataSetChanged();
                     }
                     if (currentPage != TOTAL_PAGES) activeListAdapter.addLoadingFooter();
@@ -113,17 +114,18 @@ public class ActiveListFragment extends Fragment {
 
     private void loadFirstPage() {
         activeListProgressBar.setVisibility(View.VISIBLE);
-        results.clear();
         chatViewModel.activeUser("Bearer " + api, Config.APP_ID, String.valueOf(currentPage)).observe(getActivity(), new Observer<ActiveUser>() {
             @Override
             public void onChanged(ActiveUser activeUser) {
                 if (activeUser != null) {
+                    results.clear();
                     activeListProgressBar.setVisibility(View.INVISIBLE);
                     TOTAL_PAGES = activeUser.getLastPage();
                     if (activeUser.getTotal() > 0) {
-                        for (int i = 0; i < activeUser.getData().size(); i++) {
-                            results.add(activeUser.getData().get(i));
-                        }
+//                        for (int i = 0; i < activeUser.getData().size(); i++) {
+//                            results.add(activeUser.getData().get(i));
+//                        }
+                        results.addAll(activeUser.getData());
                         activeListAdapter.notifyDataSetChanged();
                     }
                     if (currentPage < TOTAL_PAGES) activeListAdapter.addLoadingFooter();
@@ -143,7 +145,6 @@ public class ActiveListFragment extends Fragment {
         filter.addAction(Config.UPDATE_NOTIFICATION);
 
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mRegistrationBroadcastReceiver, filter);
-        loadFirstPage();
     }
 
     @Override

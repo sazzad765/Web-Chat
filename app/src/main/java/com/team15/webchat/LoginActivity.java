@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
@@ -26,7 +27,7 @@ import com.team15.webchat.ViewModel.UserViewModel;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     private EditText editTextPhone, editTextPassword;
     private Button btnLogin;
-    private TextView btnRegistration, txtWarning;
+    private TextView btnRegistration, txtWarning,txtForgetPass;
     private UserViewModel userViewModel;
     private ProgressBar loginProgressBar;
     private ImageView imgShowPass;
@@ -47,6 +48,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         loginProgressBar = findViewById(R.id.loginProgressBar);
         txtWarning = findViewById(R.id.txtWarning);
         imgShowPass = findViewById(R.id.imgShowPass);
+        txtForgetPass = findViewById(R.id.txtForgetPass);
 
         vibrator = (Vibrator) getSystemService(MainActivity.VIBRATOR_SERVICE);
         sessionManager = new SessionManager(this);
@@ -55,17 +57,29 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         btnLogin.setOnClickListener(this);
         btnRegistration.setOnClickListener(this);
         imgShowPass.setOnClickListener(this);
+        txtForgetPass.setOnClickListener(this);
     }
 
     private void submitForm() {
         txtWarning.setVisibility(View.GONE);
         final String phone = editTextPhone.getText().toString().trim();
         final String password = editTextPassword.getText().toString().trim();
-        if (phone.length() == 0) {
+        if (phone.length()<11){
             editTextPhone.requestFocus();
-            editTextPhone.setError("FIELD CANNOT BE EMPTY");
+            editTextPhone.setError("Enter valid number");
             return;
-        } else if (password.length() == 0) {
+        }
+        if (phone.length()>11){
+            editTextPhone.requestFocus();
+            editTextPhone.setError("Enter valid number");
+            return;
+        }
+        if (!TextUtils.isDigitsOnly(phone)){
+            editTextPhone.requestFocus();
+            editTextPhone.setError("Enter valid number");
+            return;
+        }
+        if (password.length() == 0) {
             editTextPassword.requestFocus();
             editTextPassword.setError("FIELD CANNOT BE EMPTY");
             return;
@@ -115,6 +129,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             else{
                 editTextPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
             }
+        } else if (v== txtForgetPass){
+            Intent intent = new Intent(LoginActivity.this, ForgetPasswordActivity.class);
+            startActivity(intent);
         }
     }
 

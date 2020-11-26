@@ -9,7 +9,7 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="55dp"
         android:background="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -59,8 +59,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="40dp"
-        android:hint="First Name"
-        android:theme="@style/EditTextProfileUpdate"
+        android:hint=" Name"
+        android:textSize="15sp"
+        android:background="@drawable/login_edit_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView7" />
@@ -73,8 +74,10 @@
         android:layout_marginStart="40dp"
         android:layout_marginEnd="40dp"
         android:hint="phone"
+        android:background="@drawable/login_edit_text"
+        android:enabled="false"
         android:inputType="phone"
-        android:theme="@style/EditTextProfileUpdate"
+        android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edtName" />

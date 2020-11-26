@@ -22,6 +22,12 @@ public class User {
     @SerializedName("purchase")
     @Expose
     private Integer purchase;
+    @SerializedName("referral_point")
+    @Expose
+    private Integer referralPoint;
+    @SerializedName("pending_point")
+    @Expose
+    private Integer pendingPoint;
     @SerializedName("favorite")
     @Expose
     private Integer favorite;
@@ -78,6 +84,22 @@ public class User {
 
     public void setPurchase(Integer purchase) {
         this.purchase = purchase;
+    }
+
+    public Integer getReferralPoint() {
+        return referralPoint;
+    }
+
+    public void setReferralPoint(Integer referralPoint) {
+        this.referralPoint = referralPoint;
+    }
+
+    public Integer getPendingPoint() {
+        return pendingPoint;
+    }
+
+    public void setPendingPoint(Integer pendingPoint) {
+        this.pendingPoint = pendingPoint;
     }
 
     public Integer getFavorite() {

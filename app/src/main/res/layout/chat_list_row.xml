@@ -20,7 +20,7 @@
 
     <TextView
         android:id="@+id/name"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginStart="5dp"
@@ -70,5 +70,15 @@
         app:civ_border_width="1dp"
         android:layout_alignEnd="@+id/profileImage"
         android:layout_alignBottom="@+id/profileImage"/>
+
+    <ImageView
+        android:id="@+id/imgFav"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_alignTop="@+id/name"
+        android:layout_alignBottom="@+id/name"
+        android:layout_marginStart="5dp"
+        android:layout_toEndOf="@+id/name"
+        app:srcCompat="@drawable/star_gd" />
 
 </RelativeLayout>

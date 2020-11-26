@@ -1,5 +1,6 @@
 package com.team15.webchat.Api;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.team15.webchat.Model.ActiveUser;
 import com.team15.webchat.Model.ApiResponse;
@@ -8,6 +9,11 @@ import com.team15.webchat.Model.ChatListPaging;
 import com.team15.webchat.Model.ChatPag;
 import com.team15.webchat.Model.Login;
 import com.team15.webchat.Model.PartialsInfo;
+import com.team15.webchat.Model.ProductList;
+import com.team15.webchat.Model.PurchaseList;
+import com.team15.webchat.Model.ReferralPointList;
+import com.team15.webchat.Model.SellerList;
+import com.team15.webchat.Model.ShortProfile;
 import com.team15.webchat.Model.User;
 import com.team15.webchat.Model.WaitingList;
 
@@ -46,6 +52,13 @@ public interface APIInterface {
     @FormUrlEncoded
     @POST("auth/profile")
     Call<User> getUser(
+            @Header("Authorization") String token,
+            @Field("user_id") String user_id
+    );
+
+    @FormUrlEncoded
+    @POST("auth/short_profile")
+    Call<ShortProfile> shortProfile(
             @Header("Authorization") String token,
             @Field("user_id") String user_id
     );
@@ -142,6 +155,44 @@ public interface APIInterface {
     );
 
     @FormUrlEncoded
+    @POST("auth/product_list")
+    Call<ProductList.ProductListPaging> getProduct(
+            @Header("Authorization") String token,
+            @Field("app_id") String app_id,
+            @Field("page") String page
+
+    );
+
+    @FormUrlEncoded
+    @POST("auth/get_seller_sells")
+    Call<PurchaseList.PurchaseListPaging> getSellerSell(
+            @Header("Authorization") String token,
+            @Field("type") String type,
+            @Field("app_id") String app_id,
+            @Field("page") String page
+
+    );
+
+    @FormUrlEncoded
+    @POST("auth/get_user_sells")
+    Call<PurchaseList.PurchaseListPaging> getUserPurchase(
+            @Header("Authorization") String token,
+            @Field("user_id") String user_id,
+            @Field("app_id") String app_id,
+            @Field("page") String page
+
+    );
+
+    @FormUrlEncoded
+    @POST("auth/referral_point_list")
+    Call<ReferralPointList.ReferralPointPaging> getReferralPointList(
+            @Header("Authorization") String token,
+            @Field("user_id") String user_id,
+            @Field("page") String page
+
+    );
+
+    @FormUrlEncoded
     @POST("auth/online_status")
     Call<JsonObject> isOnline(
             @Header("Authorization") String token,
@@ -163,7 +214,13 @@ public interface APIInterface {
     Call<JsonObject> waitingTime(
             @Header("Authorization") String token,
             @Field("user_id") String user_id,
-            @Field("seller_id") String seller_id,
+            @Field("app_id") String app_id
+    );
+
+    @FormUrlEncoded
+    @POST("auth/seller_list")
+    Call<List<SellerList>> getSellerList(
+            @Header("Authorization") String token,
             @Field("app_id") String app_id
     );
 
@@ -229,15 +286,59 @@ public interface APIInterface {
     );
 
     @FormUrlEncoded
+    @POST("auth/seller_transfer")
+    Call<ApiResponse> transferUser(
+            @Header("Authorization") String token,
+            @Field("app_id") String appId,
+            @Field("user_id") String user_id,
+            @Field("seller_id") String seller_id
+    );
+
+    @FormUrlEncoded
+    @POST("auth/sell_cancel")
+    Call<ApiResponse> cancelPurchase(
+            @Header("Authorization") String token,
+            @Field("app_id") String app_id,
+            @Field("sell_id") String sell_id
+    );
+
+    @FormUrlEncoded
+    @POST("auth/sell_approve")
+    Call<ApiResponse> acceptPurchase(
+            @Header("Authorization") String token,
+            @Field("app_id") String app_id,
+            @Field("sell_id") String sell_id
+    );
+
+    @FormUrlEncoded
+    @POST("auth/sell")
+    Call<ApiResponse> sellRequest(
+            @Header("Authorization") String token,
+            @Field("user_id") String user_id,
+            @Field("product_id") String product_id,
+            @Field("game_id") String game_id,
+            @Field("app_id") String app_id
+    );
+
+    @FormUrlEncoded
     @POST("auth/purchase")
     Call<ApiResponse> purchase(
             @Header("Authorization") String token,
-            @Field("user_id") String user_id
+            @Field("user_id") String user_id,
+            @Field("seller_id") String seller_id
+
     );
 
     @FormUrlEncoded
     @POST("auth/point")
     Call<ApiResponse> updatePoint(
+            @Header("Authorization") String token,
+            @Field("user_id") String user_id,
+            @Field("point") String point
+    );
+    @FormUrlEncoded
+    @POST("auth/set_point")
+    Call<ApiResponse> purchasePoint(
             @Header("Authorization") String token,
             @Field("user_id") String user_id,
             @Field("point") String point

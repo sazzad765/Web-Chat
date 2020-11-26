@@ -22,6 +22,18 @@ public class PartialsInfo {
     @SerializedName("favorite")
     @Expose
     private Integer favorite;
+    @SerializedName("ref")
+    @Expose
+    private Integer ref;
+    @SerializedName("referral_point")
+    @Expose
+    private Integer referralPoint;
+    @SerializedName("pending_point")
+    @Expose
+    private Integer pendingPoint;
+    @SerializedName("set_point")
+    @Expose
+    private Integer setPoint;
 
     public Integer getId() {
         return id;
@@ -69,6 +81,38 @@ public class PartialsInfo {
 
     public void setFavorite(Integer favorite) {
         this.favorite = favorite;
+    }
+
+    public Integer getRef() {
+        return ref;
+    }
+
+    public void setRef(Integer ref) {
+        this.ref = ref;
+    }
+
+    public Integer getReferralPoint() {
+        return referralPoint;
+    }
+
+    public void setReferralPoint(Integer referralPoint) {
+        this.referralPoint = referralPoint;
+    }
+
+    public Integer getPendingPoint() {
+        return pendingPoint;
+    }
+
+    public void setPendingPoint(Integer pendingPoint) {
+        this.pendingPoint = pendingPoint;
+    }
+
+    public Integer getSetPoint() {
+        return setPoint;
+    }
+
+    public void setSetPoint(Integer setPoint) {
+        this.setPoint = setPoint;
     }
 
 }

@@ -50,7 +50,6 @@ public class ChatListFragment extends Fragment {
     private NestedScrollView nestedScrollView;
     private EditText search_users;
     private ProgressBar chatListProgressBar;
-    private ImageView imgMenu;
     private ChatListAdapter chatListAdapter;
     private WaitingListAdapter waitingListAdapter;
     private ChatViewModel chatViewModel;
@@ -75,7 +74,6 @@ public class ChatListFragment extends Fragment {
         recyclerChatList = view.findViewById(R.id.recyclerChatList);
         recyclerWaitingList = view.findViewById(R.id.recyclerWaitingList);
         chatListProgressBar = view.findViewById(R.id.chatListProgressBar);
-        imgMenu = view.findViewById(R.id.img_menu);
 
         nestedScrollView = view.findViewById(R.id.nestedScrollView);
 
@@ -122,12 +120,7 @@ public class ChatListFragment extends Fragment {
                 getWaitingList();
             }
         };
-        imgMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                menuClick(v);
-            }
-        });
+
         if (chatListAdapter.getItemCount() <= 0) {
             chatListProgressBar.setVisibility(View.VISIBLE);
         }
@@ -148,38 +141,6 @@ public class ChatListFragment extends Fragment {
         }
     };
 
-
-    private void menuClick(View v) {
-        PopupMenu popup = new PopupMenu(getActivity(), v);
-        popup.inflate(R.menu.top_menu);
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.logout:
-                        isOnline("0");
-                        sessionManager.logout();
-                        try {
-                            FirebaseInstanceId.getInstance().deleteInstanceId();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        startActivity(new Intent(getActivity(), LoginActivity.class).
-                                setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
-                        break;
-//                            case R.id.menu2:
-//                                //handle menu2 click
-//                                break;
-                    default:
-                        break;
-
-                }
-                return false;
-            }
-        });
-
-        popup.show();
-    }
 
     private void isOnline(String status) {
         userViewModel.isOnline("Bearer " + api, user_id, status);

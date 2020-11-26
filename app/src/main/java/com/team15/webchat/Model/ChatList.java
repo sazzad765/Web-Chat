@@ -19,6 +19,9 @@ public class ChatList {
     @SerializedName("active_status")
     @Expose
     private Integer activeStatus;
+    @SerializedName("favorite")
+    @Expose
+    private Integer favorite;
     @SerializedName("last_message")
     @Expose
     private String lastMessage;
@@ -28,9 +31,6 @@ public class ChatList {
     @SerializedName("created_at")
     @Expose
     private String createdAt;
-
-    public ChatList() {
-    }
 
     public Integer getUserId() {
         return userId;
@@ -70,6 +70,14 @@ public class ChatList {
 
     public void setActiveStatus(Integer activeStatus) {
         this.activeStatus = activeStatus;
+    }
+
+    public Integer getFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(Integer favorite) {
+        this.favorite = favorite;
     }
 
     public String getLastMessage() {

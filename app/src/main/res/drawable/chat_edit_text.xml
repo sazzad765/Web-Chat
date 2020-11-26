@@ -8,7 +8,7 @@
         />
 
     <solid
-        android:color="@color/chat_edit_text"
+        android:color="@color/colorPrimaryDark"
         />
     <padding
         android:left="20dp"

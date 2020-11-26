@@ -6,12 +6,14 @@ import androidx.lifecycle.ViewModel;
 import com.team15.webchat.Model.ApiResponse;
 import com.team15.webchat.Model.DeviceReg;
 import com.team15.webchat.Model.Login;
+import com.team15.webchat.Model.ShortProfile;
 import com.team15.webchat.Model.User;
 import com.team15.webchat.Repositories.UserRepository;
 
 public class UserViewModel extends ViewModel {
     private UserRepository repository;
     private LiveData<User> getUser;
+    private LiveData<ShortProfile> sortProfileLiveData;
 
     public UserViewModel() {
         super();
@@ -22,6 +24,10 @@ public class UserViewModel extends ViewModel {
     public LiveData<User> getUser(String token,String userId) {
         getUser = repository.getUser(token,userId);
         return getUser;
+    }
+    public LiveData<ShortProfile> getShortProfile(String token, String userId) {
+        sortProfileLiveData = repository.getShortProfile(token,userId);
+        return sortProfileLiveData;
     }
     public LiveData<Login> getLogin(String phone, String password) {
         LiveData<Login> userLogin;

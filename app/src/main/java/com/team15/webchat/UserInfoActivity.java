@@ -12,34 +12,49 @@ import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.team15.webchat.Model.ApiResponse;
 import com.team15.webchat.Model.PartialsInfo;
+import com.team15.webchat.Model.SellerList;
 import com.team15.webchat.Session.SessionManager;
 import com.team15.webchat.ViewModel.AppViewModel;
 import com.team15.webchat.ViewModel.ChatViewModel;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class UserInfoActivity extends AppCompatActivity implements View.OnClickListener {
     private TextView txtUserName, txtUserPhone, txtUserPoint, txtUserPurchase, txtPointDe;
+    private TextView txtPurchaseIn, txtPurchaseDe;
     private TextView txtPointIn, txtNote;
-    private EditText editPoint;
-    private Button btnGift;
+    private EditText editPoint, editPurchasePoint;
+    private Button btnGift, btnPurchasePoint, btnTransfer;
     private ImageView imgFavourite, imgBack;
     private ImageView imgUserProfile;
+    private ProgressBar progressBar;
     private AppViewModel appViewModel;
     private SessionManager sessionManager;
     private String id, api;
-
+    ArrayList<String> arraylist ;
+    List<SellerList> sellerLists = new ArrayList<>();
     int isFav;
 
     @Override
@@ -63,12 +78,17 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         api = userInfo.get(SessionManager.API_KEY);
         getData();
 
+        arraylist = new ArrayList<String>();
         txtPointDe.setOnClickListener(this);
         txtPointIn.setOnClickListener(this);
         txtNote.setOnClickListener(this);
         btnGift.setOnClickListener(this);
         imgFavourite.setOnClickListener(this);
         imgBack.setOnClickListener(this);
+        txtPurchaseIn.setOnClickListener(this);
+        txtPurchaseDe.setOnClickListener(this);
+        btnPurchasePoint.setOnClickListener(this);
+        btnTransfer.setOnClickListener(this);
     }
 
     private void getData() {
@@ -77,8 +97,9 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             public void onChanged(PartialsInfo partialsInfo) {
                 if (partialsInfo != null) {
                     txtUserPoint.setText(partialsInfo.getPoint().toString());
+                    editPurchasePoint.setText(partialsInfo.getSetPoint().toString());
                     txtUserPurchase.setText(partialsInfo.getPurchase().toString());
-                    if (partialsInfo.getNote()!=null){
+                    if (partialsInfo.getNote() != null) {
                         txtNote.setText(partialsInfo.getNote());
                     }
                     isFav = partialsInfo.getFavorite();
@@ -91,6 +112,76 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             }
         });
     }
+
+    private void sellerList() {
+        progressBar.setVisibility(View.VISIBLE);
+        appViewModel.getSellerList("Bearer " + api).observe(this, new Observer<List<SellerList>>() {
+            @Override
+            public void onChanged(List<SellerList> object) {
+                progressBar.setVisibility(View.GONE);
+                arraylist.clear();
+                sellerLists.clear();
+                if (object != null) {
+                    sellerLists.addAll(object);
+                    for (int i = 0; i < object.size(); i++) {
+                        String name = object.get(i).getName();
+                        arraylist.add(name);
+                    }
+                    showSeller();
+
+                }
+            }
+        });
+    }
+
+    private void showSeller() {
+        AlertDialog.Builder alertDialog = new
+                AlertDialog.Builder(this);
+        View rowList = getLayoutInflater().inflate(R.layout.row, null);
+        ListView listView = rowList.findViewById(R.id.listView);
+        TextView btnAdd = rowList.findViewById(R.id.btnAdd);
+        TextView btnClose = rowList.findViewById(R.id.btnClose);
+        ArrayAdapter adapter = new ArrayAdapter(this, R.layout.list_item, arraylist);
+        listView.setAdapter(adapter);
+        ;
+        adapter.notifyDataSetChanged();
+        alertDialog.setView(rowList);
+        final AlertDialog dialog = alertDialog.create();
+        dialog.show();
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                transferUser(sellerLists.get(position).getId());
+                progressBar.setVisibility(View.VISIBLE);
+                dialog.dismiss();
+            }
+        });
+
+        btnAdd.setVisibility(View.GONE);
+
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+    }
+
+    private void transferUser(String seller_id){
+
+        appViewModel.transferUser("Bearer " + api,id,seller_id).observe(this, new Observer<ApiResponse>() {
+            @Override
+            public void onChanged(ApiResponse apiResponse) {
+                progressBar.setVisibility(View.GONE);
+                if (apiResponse!= null){
+                    Toast.makeText(UserInfoActivity.this, apiResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
+    }
+
 
     private void isFavourite() {
         if (isFav == 0) {
@@ -168,6 +259,29 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 .setNegativeButton(android.R.string.no, null).show();
     }
 
+    private void purchasePoint() {
+        final String point = editPurchasePoint.getText().toString();
+        new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogCustom))
+                .setTitle("Purchase Point")
+                .setMessage("Do you really want to save " + point + " point?")
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        appViewModel.purchasePoint("Bearer " + api, id, point).observe(UserInfoActivity.this, new Observer<ApiResponse>() {
+                            @Override
+                            public void onChanged(ApiResponse apiResponse) {
+                                if (apiResponse != null) {
+                                    Toast.makeText(UserInfoActivity.this, apiResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                                    getData();
+                                }
+                            }
+                        });
+                    }
+                })
+                .setNegativeButton(android.R.string.no, null).show();
+    }
+
     private void init() {
         txtUserName = findViewById(R.id.txtUserName);
         txtUserPhone = findViewById(R.id.txtUserPhone);
@@ -181,6 +295,13 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         imgUserProfile = findViewById(R.id.imgUserProfile);
         imgFavourite = findViewById(R.id.imgFavourite);
         imgBack = findViewById(R.id.imgBack);
+        btnTransfer = findViewById(R.id.btnTransfer);
+
+        txtPurchaseIn = findViewById(R.id.txtPurchaseIn);
+        editPurchasePoint = findViewById(R.id.editPurchasePoint);
+        txtPurchaseDe = findViewById(R.id.txtPurchaseDe);
+        btnPurchasePoint = findViewById(R.id.btnPurchasePoint);
+        progressBar = findViewById(R.id.progressBar);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -189,7 +310,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         switch (v.getId()) {
             case R.id.txtPointDe:
                 int i = Integer.parseInt(editPoint.getText().toString());
-                if(i<=2){
+                if (i <= 2) {
                     return;
                 }
                 i = i - 1;
@@ -204,6 +325,24 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             case R.id.btnGift:
                 giftPoint();
                 break;
+
+            case R.id.txtPurchaseDe:
+                int x = Integer.parseInt(editPurchasePoint.getText().toString());
+                if (x <= 2) {
+                    return;
+                }
+                x = x - 1;
+                editPurchasePoint.setText(String.valueOf(x));
+
+                break;
+            case R.id.txtPurchaseIn:
+                int b = Integer.parseInt(editPurchasePoint.getText().toString());
+                b = b + 1;
+                editPurchasePoint.setText(String.valueOf(b));
+                break;
+            case R.id.btnPurchasePoint:
+                purchasePoint();
+                break;
             case R.id.txtNote:
                 updateNote();
                 break;
@@ -212,6 +351,9 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 break;
             case R.id.imgBack:
                 finish();
+                break;
+            case R.id.btnTransfer:
+                sellerList();
                 break;
             default:
                 break;

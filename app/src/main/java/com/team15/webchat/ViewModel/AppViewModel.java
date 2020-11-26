@@ -9,10 +9,15 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.team15.webchat.Model.ApiResponse;
 import com.team15.webchat.Model.Banner;
 import com.team15.webchat.Model.PartialsInfo;
+import com.team15.webchat.Model.ProductList;
+import com.team15.webchat.Model.PurchaseList;
+import com.team15.webchat.Model.ReferralPointList;
+import com.team15.webchat.Model.SellerList;
 import com.team15.webchat.Model.User;
 import com.team15.webchat.R;
 import com.team15.webchat.Repositories.AppRepository;
@@ -23,7 +28,10 @@ import java.util.List;
 public class AppViewModel extends ViewModel {
     private AppRepository repository;
     LiveData<List<Banner>> data;
-    private LiveData<User> getUser;
+
+    LiveData<ProductList.ProductListPaging>productListLiveData;
+    LiveData<PurchaseList.PurchaseListPaging>purchaseListPagingLiveData;
+    LiveData<ReferralPointList.ReferralPointPaging>referralPointPagingLiveData;
 
     public AppViewModel() {
         super();
@@ -35,15 +43,40 @@ public class AppViewModel extends ViewModel {
         data = repository.getBanner();
         return data;
     }
+    public LiveData<ProductList.ProductListPaging> getProduct(String token,String page) {
+        productListLiveData = repository.getProduct(token,page);
+        return productListLiveData;
+    }
+
+    public LiveData<PurchaseList.PurchaseListPaging> getSellerSell(String token,String type,String page) {
+        purchaseListPagingLiveData = repository.getSellerSell(token,type,page);
+        return purchaseListPagingLiveData;
+    }
+    public LiveData<PurchaseList.PurchaseListPaging> getUserPurchase(String token,String userId,String page) {
+        purchaseListPagingLiveData = repository.getUserPurchase(token,userId,page);
+        return purchaseListPagingLiveData;
+    }
+
+    public LiveData<ReferralPointList.ReferralPointPaging> getReferralPointList(String token, String userId, String page) {
+        referralPointPagingLiveData = repository.getReferralPointList(token,userId,page);
+        return referralPointPagingLiveData;
+    }
 
     public LiveData<User> getSeller(String token, String userId) {
+        LiveData<User> getUser;
         getUser = repository.getSeller(token, userId);
         return getUser;
     }
 
-    public LiveData<JsonObject> getPosition(String token, String userId, String seller_id) {
+    public LiveData<JsonObject> getPosition(String token, String userId) {
         LiveData<JsonObject> liveData;
-        liveData = repository.getPosition(token, userId, seller_id);
+        liveData = repository.getPosition(token, userId);
+        return liveData;
+    }
+
+    public LiveData<List<SellerList>> getSellerList(String token) {
+        LiveData<List<SellerList>> liveData;
+        liveData = repository.getSellerList(token);
         return liveData;
     }
 
@@ -71,9 +104,32 @@ public class AppViewModel extends ViewModel {
         return liveData;
     }
 
-    public LiveData<ApiResponse> purchase(String token, String userId) {
+    public LiveData<ApiResponse> transferUser(String token, String userId, String seller_id) {
         LiveData<ApiResponse> liveData;
-        liveData = repository.purchase(token, userId);
+        liveData = repository.transferUser(token, userId, seller_id);
+        return liveData;
+    }
+
+    public LiveData<ApiResponse> cancelPurchase(String token, String sellId ) {
+        LiveData<ApiResponse> liveData;
+        liveData = repository.cancelPurchase(token, sellId);
+        return liveData;
+    }
+    public LiveData<ApiResponse> acceptPurchase(String token, String sellId ) {
+        LiveData<ApiResponse> liveData;
+        liveData = repository.acceptPurchase(token, sellId);
+        return liveData;
+    }
+
+    public LiveData<ApiResponse> sellRequest(String token, String userId, String product_id,String game_id) {
+        LiveData<ApiResponse> liveData;
+        liveData = repository.sellRequest(token, userId, product_id,game_id);
+        return liveData;
+    }
+
+    public LiveData<ApiResponse> purchase(String token, String userId,String sellerId) {
+        LiveData<ApiResponse> liveData;
+        liveData = repository.purchase(token, userId,sellerId);
         return liveData;
 
     }
@@ -81,6 +137,11 @@ public class AppViewModel extends ViewModel {
     public LiveData<ApiResponse> updatePoint(String token, String userId, String point) {
         LiveData<ApiResponse> liveData;
         liveData = repository.updatePoint(token, userId, point);
+        return liveData;
+    }
+    public LiveData<ApiResponse> purchasePoint(String token, String userId, String point) {
+        LiveData<ApiResponse> liveData;
+        liveData = repository.purchasePoint(token, userId, point);
         return liveData;
     }
 

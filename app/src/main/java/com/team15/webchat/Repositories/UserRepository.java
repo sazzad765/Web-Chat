@@ -12,6 +12,7 @@ import com.team15.webchat.App.Config;
 import com.team15.webchat.Model.ApiResponse;
 import com.team15.webchat.Model.DeviceReg;
 import com.team15.webchat.Model.Login;
+import com.team15.webchat.Model.ShortProfile;
 import com.team15.webchat.Model.User;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class UserRepository extends Observable {
     private APIInterface apiInterface;
     private MutableLiveData<List<User>> allNotes = new MutableLiveData<>();
     final MutableLiveData<User> userProfile = new MutableLiveData<>();
+     MutableLiveData<ShortProfile> shortProfileMutableLiveData = new MutableLiveData<>();
 
     private static UserRepository userRepository;
 
@@ -67,6 +69,23 @@ public class UserRepository extends Observable {
             }
         });
         return userProfile;
+    }
+
+    public LiveData<ShortProfile> getShortProfile(String token, String userId){
+
+        Call<ShortProfile> call2 = apiInterface.shortProfile(token,userId);
+        call2.enqueue(new Callback<ShortProfile>() {
+            @Override
+            public void onResponse(Call<ShortProfile> call, Response<ShortProfile> response) {
+                shortProfileMutableLiveData.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<ShortProfile> call, Throwable t) {
+                call.cancel();
+            }
+        });
+        return shortProfileMutableLiveData;
     }
 
 

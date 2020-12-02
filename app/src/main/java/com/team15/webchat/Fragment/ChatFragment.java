@@ -71,7 +71,7 @@ import retrofit2.Response;
 
 import static android.app.Activity.RESULT_OK;
 
-public class ChatFragment extends Fragment {
+public class ChatFragment extends Fragment  {
 
     private RecyclerView recyclerChat;
     private ChatViewModel chatViewModel;
@@ -96,6 +96,8 @@ public class ChatFragment extends Fragment {
     private static final int PICK_IMAGE = 1;
 
     private Handler mHandler;
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -192,7 +194,8 @@ public class ChatFragment extends Fragment {
     private final Runnable m_Runnable = new Runnable() {
         public void run() {
             waitingPosition();
-            mHandler.postDelayed(m_Runnable, 50000);
+//            loadFirstPage();
+            mHandler.postDelayed(m_Runnable, 30000);
         }
     };
 
@@ -258,7 +261,6 @@ public class ChatFragment extends Fragment {
     }
 
     private void loadFirstPage() {
-        chat.clear();
         chatViewModel.messageData("Bearer " + api, userId, receiverId, "1").observe(getActivity(), new Observer<ChatPag>() {
             @Override
             public void onChanged(ChatPag chatPag) {
@@ -266,9 +268,10 @@ public class ChatFragment extends Fragment {
                     TOTAL_PAGES = chatPag.getLastPage();
                     chat.clear();
                     if (chatPag.getTotal() > 0) {
-                        for (int i = 0; i < chatPag.getData().size(); i++) {
-                            chat.add(chatPag.getData().get(i));
-                        }
+                        chat.addAll(chatPag.getData());
+//                        for (int i = 0; i < chatPag.getData().size(); i++) {
+//                            chat.add(chatPag.getData().get(i));
+//                        }
                         chatAdapter.notifyDataSetChanged();
                         if (chatAdapter.getItemCount() > 1) {
                             recyclerChat.getLayoutManager().smoothScrollToPosition(recyclerChat, null, 0);
@@ -329,6 +332,13 @@ public class ChatFragment extends Fragment {
                 new IntentFilter(Config.MESSAGE_NOTIFICATION));
         m_Runnable.run();
         waitingPosition();
+        loadFirstPage();
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 
     @Override

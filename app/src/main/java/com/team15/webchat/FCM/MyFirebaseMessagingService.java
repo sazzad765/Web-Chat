@@ -81,12 +81,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }else if (notification_type.equals(Config.UPDATE_NOTIFICATION)) {
             Intent pushNotification = new Intent(Config.UPDATE_NOTIFICATION);
             LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
-            playNotificationSound(this);
+//            playNotificationSound(this);
         }
         else{
             Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
             LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
-            playNotificationSound(this);
+//            playNotificationSound(this);
         }
 
     }
@@ -139,7 +139,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         NotificationCompat.Action replyAction = new NotificationCompat.Action.Builder(
-                R.drawable.ic_launcher_foreground,
+                R.drawable.notification_icon,
                 "Reply",
                 replyPendingIntent
         ).addRemoteInput(remoteInput).build();
@@ -156,7 +156,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             messagingStyle.addMessage(notificationMessage);
         }
         NotificationCompat.Builder notification = new NotificationCompat.Builder(context, CHANNEL_1_ID)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setSmallIcon(R.drawable.notification_icon)
                 .setStyle(messagingStyle)
                 .addAction(replyAction)
                 .setColor(Color.BLUE)

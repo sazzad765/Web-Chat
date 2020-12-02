@@ -307,7 +307,8 @@ public interface APIInterface {
     Call<ApiResponse> acceptPurchase(
             @Header("Authorization") String token,
             @Field("app_id") String app_id,
-            @Field("sell_id") String sell_id
+            @Field("sell_id") String sell_id,
+            @Field("seller_id") String seller_id
     );
 
     @FormUrlEncoded

@@ -206,9 +206,9 @@ public class AppRepository extends Observable {
         return data;
     }
 
-    public LiveData<ApiResponse> acceptPurchase(String token, String sellId) {
+    public LiveData<ApiResponse> acceptPurchase(String token, String sellId,String id) {
         final MutableLiveData<ApiResponse> data = new MutableLiveData<>();
-        Call<ApiResponse> call2 = apiInterface.acceptPurchase(token, Config.APP_ID, sellId);
+        Call<ApiResponse> call2 = apiInterface.acceptPurchase(token, Config.APP_ID, sellId,id);
         call2.enqueue(new Callback<ApiResponse>() {
             @Override
             public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {

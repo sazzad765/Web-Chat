@@ -65,7 +65,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 viewHolder.txtProductName.setText(product1.getProductName());
                 viewHolder.txtQuantity.setText(product1.getQuantity().toString());
                 viewHolder.txtPoint.setText(product1.getPoint().toString());
-                viewHolder.txtPrice.setText(product1.getPrice().toString());
+//                viewHolder.txtPrice.setText(product1.getPrice().toString());
                 Glide.with(context)
                         .load(product1.getImage())
                         .apply(RequestOptions.centerCropTransform())
@@ -75,6 +75,12 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     @Override
                     public void onClick(View v) {
                         onClickListener.requestOnClick(v,position);
+                    }
+                });
+                viewHolder.imgMessage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onClickListener.messageOnClick(v,position);
                     }
                 });
                 break;
@@ -117,12 +123,13 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public interface ProductListAdapterListener{
         void requestOnClick(View v, int position);
+        void messageOnClick(View v, int position);
     }
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
 
         private TextView txtProductName, txtQuantity, txtPrice, txtPoint;
-        private ImageView imageProduct;
+        private ImageView imageProduct,imgMessage;
         private Button btnRequest;
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -130,8 +137,9 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             imageProduct = itemView.findViewById(R.id.imageProduct);
             txtProductName = itemView.findViewById(R.id.txtProductName);
             txtQuantity = itemView.findViewById(R.id.txtQuantity);
-            txtPrice = itemView.findViewById(R.id.txtPrice);
+//            txtPrice = itemView.findViewById(R.id.txtPrice);
             txtPoint = itemView.findViewById(R.id.txtPoint);
+            imgMessage = itemView.findViewById(R.id.imgMessage);
         }
     }
     public class LoadingViewHolder extends RecyclerView.ViewHolder {

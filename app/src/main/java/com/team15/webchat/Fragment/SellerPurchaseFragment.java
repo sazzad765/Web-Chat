@@ -3,11 +3,13 @@ package com.team15.webchat.Fragment;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -20,6 +22,7 @@ import android.widget.Toast;
 
 import com.team15.webchat.Adapters.PaginationScrollListener;
 import com.team15.webchat.Adapters.SellerPurchaseListAdapter;
+import com.team15.webchat.ChatActivity;
 import com.team15.webchat.Model.ApiResponse;
 import com.team15.webchat.Model.PurchaseList;
 import com.team15.webchat.R;
@@ -44,8 +47,9 @@ public class SellerPurchaseFragment extends Fragment {
     private int TOTAL_PAGES;
     private int currentPage = PAGE_START;
     private String api;
-    private String sellerId;
+//    private String sellerId;
     private String type;
+    private String id;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
@@ -54,12 +58,13 @@ public class SellerPurchaseFragment extends Fragment {
 
         recyclerPurchaseList = view.findViewById(R.id.recyclerPurchaseList);
         Spinner spinner = (Spinner) view.findViewById(R.id.spinner);
-        appViewModel = ViewModelProviders.of(getActivity()).get(AppViewModel.class);
+        appViewModel = new ViewModelProvider(getActivity()).get(AppViewModel.class);
 
         sessionManager = new SessionManager(getActivity());
         HashMap<String, String> userInfo = sessionManager.get_user();
-        sellerId = userInfo.get(SessionManager.SELLER_ID);
+//        sellerId = userInfo.get(SessionManager.SELLER_ID);
         api = userInfo.get(SessionManager.API_KEY);
+        id = userInfo.get(SessionManager.USER_ID);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         sellerPurchaseListAdapter = new SellerPurchaseListAdapter(getActivity(), purchase, new SellerPurchaseListAdapter.SellerPurchaseListAdapterListener() {
@@ -70,7 +75,7 @@ public class SellerPurchaseFragment extends Fragment {
 
             @Override
             public void acceptOnClick(View v, int position) {
-                acceptPurchase(purchase.get(position).getSellId().toString());
+                acceptPurchase(purchase.get(position).getSellId().toString(),purchase.get(position).getUserId().toString());
             }
         });
         recyclerPurchaseList.setLayoutManager(linearLayoutManager);
@@ -179,7 +184,7 @@ public class SellerPurchaseFragment extends Fragment {
                 .setNegativeButton(android.R.string.no, null).show();
     }
 
-    private void acceptPurchase(final String sellId){
+    private void acceptPurchase(final String sellId, final String userId){
         new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom))
                 .setTitle("Purchase")
                 .setMessage("Do you really want to approve this purchase")
@@ -187,12 +192,17 @@ public class SellerPurchaseFragment extends Fragment {
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        appViewModel.acceptPurchase("Bearer " + api,sellId).observe(getActivity(), new Observer<ApiResponse>() {
+                        appViewModel.acceptPurchase("Bearer " + api,sellId,id).observe(getActivity(), new Observer<ApiResponse>() {
                             @Override
                             public void onChanged(ApiResponse apiResponse) {
                                 if (apiResponse!=null){
                                     Toast.makeText(getActivity(), apiResponse.getMessage(), Toast.LENGTH_SHORT).show();
                                     loadFirstPage();
+                                    if (apiResponse.getSuccess()==1){
+                                        Intent intent = new Intent(getActivity(), ChatActivity.class);
+                                        intent.putExtra("receiverId",userId);
+                                        startActivity(intent);
+                                    }
                                 }
                             }
                         });

@@ -110,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
     }
 
     private void setupTabIcons() {
@@ -121,8 +123,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setupViewPager(ViewPager viewPager) {
-        PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager());
+    private void setupViewPager(final ViewPager viewPager) {
+        final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager());
         if (userType.equals("user")) {
             adapter.addFrag(new HomeFragment());
             adapter.addFrag(new ChatFragment());
@@ -135,6 +137,23 @@ public class MainActivity extends AppCompatActivity {
         }
 
         viewPager.setAdapter(adapter);
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                adapter.getItem(position).onResume();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     private void updateDeviceId(DeviceReg deviceReg) {
@@ -155,20 +174,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        isOnline("1");
+//        isOnline("1");
     }
 
     @Override
     protected void onPause() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
-        isOnline("0");
+//        isOnline("0");
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        isOnline("0");
+//        isOnline("0");
     }
 
     @Override
@@ -209,9 +228,9 @@ public class MainActivity extends AppCompatActivity {
                                 setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
                         finish();
                         break;
-//                            case R.id.menu2:
-//                                //handle menu2 click
-//                                break;
+                    case R.id.about:
+                        startActivity(new Intent(MainActivity.this, AboutActivity.class));
+                        break;
                     default:
                         break;
 

@@ -28,10 +28,10 @@
         android:text="Diamond pubg" />
 
     <LinearLayout
+        android:id="@+id/layout5"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/txtProductName"
-        android:layout_alignBottom="@+id/imageProduct"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnRequest"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="10dp"
         android:layout_marginTop="5dp"
@@ -42,84 +42,103 @@
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:text="Diamond"/>
+                android:text="Diamond"
+                android:textSize="12sp" />
+
             <TextView
                 android:id="@+id/txtQuantity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:theme="@style/txt_bold_small_title"
+                android:text="200"
                 android:textSize="13dp"
-                android:text="200"/>
+                android:theme="@style/txt_bold_small_title" />
         </LinearLayout>
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_weight="1"-->
+<!--            android:gravity="center"-->
+<!--            android:orientation="vertical">-->
+
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Price"-->
+<!--                android:textSize="12sp" />-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/txtPrice"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="200"-->
+<!--                android:textSize="13dp"-->
+<!--                android:theme="@style/txt_bold_small_title" />-->
+<!--        </LinearLayout>-->
+
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:text="Price"/>
-            <TextView
-                android:id="@+id/txtPrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:theme="@style/txt_bold_small_title"
-                android:textSize="13dp"
-                android:text="200"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:text="Point"/>
+                android:text="Point"
+                android:textSize="12sp" />
+
             <TextView
                 android:id="@+id/txtPoint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:theme="@style/txt_bold_small_title"
+                android:text="200"
                 android:textSize="13dp"
-                android:text="200"/>
+                android:theme="@style/txt_bold_small_title" />
         </LinearLayout>
     </LinearLayout>
 
     <Button
         android:id="@+id/btnRequest"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_alignBottom="@+id/txtProductName"
+        android:layout_height="25dp"
+
         android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="5dp"
+        android:layout_toStartOf="@+id/imgMessage"
         android:background="@drawable/round_button"
         android:text="Request"
         android:textAllCaps="false"
-        android:textSize="12sp"
-        android:textColor="@color/white"/>
+        android:textColor="@color/white"
+        android:textSize="12sp" />
 
     <View
         android:id="@+id/view4"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginEnd="20dp"
+        android:layout_below="@+id/layout5"
         android:layout_marginStart="20dp"
-        android:background="@color/colorAccent"
-        android:layout_below="@+id/imageProduct"
-        android:layout_marginTop="5dp" />
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="20dp"
+        android:background="@color/colorAccent" />
+
+    <ImageView
+        android:id="@+id/imgMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="10dp"
+        android:scaleType="centerCrop"
+        app:srcCompat="@android:drawable/sym_action_chat"
+        app:tint="@color/colorPrimary" />
 </RelativeLayout>

@@ -349,6 +349,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(Config.MESSAGE_NOTIFICATION));
         setProfile();
+        loadFirstPage();
     }
 
     @Override

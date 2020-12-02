@@ -115,9 +115,9 @@ public class AppViewModel extends ViewModel {
         liveData = repository.cancelPurchase(token, sellId);
         return liveData;
     }
-    public LiveData<ApiResponse> acceptPurchase(String token, String sellId ) {
+    public LiveData<ApiResponse> acceptPurchase(String token, String sellId ,String id) {
         LiveData<ApiResponse> liveData;
-        liveData = repository.acceptPurchase(token, sellId);
+        liveData = repository.acceptPurchase(token, sellId,id);
         return liveData;
     }
 

@@ -12,6 +12,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,14 +32,17 @@ import com.smarteist.autoimageslider.SliderAnimations;
 import com.smarteist.autoimageslider.SliderView;
 import com.team15.webchat.Adapters.ProductListAdapter;
 import com.team15.webchat.Adapters.SliderAdapter;
+import com.team15.webchat.App.Config;
 import com.team15.webchat.ChatActivity;
 import com.team15.webchat.Model.ApiResponse;
 import com.team15.webchat.Model.Banner;
+import com.team15.webchat.Model.Chat;
 import com.team15.webchat.Model.ProductList;
 import com.team15.webchat.Model.User;
 import com.team15.webchat.R;
 import com.team15.webchat.Session.SessionManager;
 import com.team15.webchat.ViewModel.AppViewModel;
+import com.team15.webchat.ViewModel.ChatViewModel;
 import com.team15.webchat.ViewModel.UserViewModel;
 
 import java.util.ArrayList;
@@ -53,6 +57,7 @@ public class HomeFragment extends Fragment {
     private SliderAdapter adapter;
     private AppViewModel appViewModel;
     private UserViewModel userViewModel;
+    private ChatViewModel chatViewModel;
     private SessionManager sessionManager;
     List<ProductList.Product> product = new ArrayList<>();
 
@@ -80,6 +85,7 @@ public class HomeFragment extends Fragment {
 
         appViewModel = ViewModelProviders.of(getActivity()).get(AppViewModel.class);
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        chatViewModel = new ViewModelProvider(this).get(ChatViewModel.class);
 
         recyclerProduct = view.findViewById(R.id.recyclerProduct);
         imageSliderSmall = view.findViewById(R.id.imageSliderSmall);
@@ -110,6 +116,16 @@ public class HomeFragment extends Fragment {
             @Override
             public void requestOnClick(View v, int position) {
                 purchaseDialog(product.get(position).getId().toString());
+            }
+
+            @Override
+            public void messageOnClick(View v, int position) {
+                String message = "Hi i want to buy \npackage: "+product.get(position).getProductName()+"\n"+"Diamond: "
+                        +product.get(position).getQuantity()+" => price: "+product.get(position).getPrice();
+                sendMessage(message,userId,sellerId,"text");
+
+//                new ChatFragment().sendMessage(message,userId,sellerId,"text");
+
             }
         });
         recyclerProduct.setLayoutManager(linearLayoutManager);
@@ -168,6 +184,25 @@ public class HomeFragment extends Fragment {
                 }
             }
         });
+    }
+
+    public void sendMessage(final String message, String senderId, final String receiverId, final String type) {
+
+            new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom))
+                    .setTitle("Message")
+                    .setMessage(message)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            chatViewModel.sendMessage("Bearer " + api, userId, receiverId, message, type, "user");
+                        }
+                    })
+                    .setNegativeButton(android.R.string.cancel,null)
+                    .show();
+
+
+
     }
 
 

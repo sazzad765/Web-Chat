@@ -31,7 +31,7 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="5dp"
             android:layout_toEndOf="@+id/imageView2"
-            android:text="Chat App"
+            android:text="@string/app_name"
             android:textSize="17sp"
             android:textStyle="bold"
             android:textColor="@color/white"

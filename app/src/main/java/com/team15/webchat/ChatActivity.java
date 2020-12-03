@@ -334,6 +334,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             public void onChanged(ApiResponse apiResponse) {
                                 if (apiResponse != null) {
                                     Toast.makeText(ChatActivity.this, apiResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                                    loadFirstPage();
                                 }
                             }
                         });

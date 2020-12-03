@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Web Chat</string>
+    <string name="app_name">Gaming World</string>
     <string name="login_text">A sister concern of hello gaming</string>
 
     <string name="err_tel">enter valid phone Number</string>
@@ -16,4 +16,5 @@
     <string name="wrong_login">Wrong! check phone and password</string>
     <string name="reg_welcome_note">Welcome To Gaming World</string>
     <string name="about1">Small remark when filling in this Privacy Policy generator: Not all parts of this Privacy Policy might be applicable to your website. When there are parts that are not applicable, these can be removed. Optional elements can be selected in step 2. The accuracy of the generated Privacy Policy on this website is not legally binding. Use at your own risk.</string>
+    <string name="forget_password">Forget Password!</string>
 </resources>

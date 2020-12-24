@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     android:padding="10dp"
     android:layout_margin="10dp"
+    android:maxLines="4"
     android:gravity="center|start"
     android:textColor="@color/white"
     android:background="@drawable/round_button">

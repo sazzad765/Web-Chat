@@ -13,5 +13,6 @@ public class Config {
 
     public static final String MESSAGE_NOTIFICATION = "message";
     public static final String UPDATE_NOTIFICATION = "update";
+    public static final String TRANSFER_NOTIFICATION = "transfer";
 
 }

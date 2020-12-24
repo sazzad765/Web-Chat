@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "784689979573",
+    "firebase_url": "https://web-chat-fcc35.firebaseio.com",
+    "project_id": "web-chat-fcc35",
+    "storage_bucket": "web-chat-fcc35.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:784689979573:android:036ba1902f584fc6cb1efc",
+        "android_client_info": {
+          "package_name": "com.team15.webchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "784689979573-0mhcsdsu17b7sji6cmf2296s02thdidc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgKp0BRDG5bsBlFg5sOcQqf8DlrwhUDoQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "784689979573-0mhcsdsu17b7sji6cmf2296s02thdidc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

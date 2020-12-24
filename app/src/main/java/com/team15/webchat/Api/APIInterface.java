@@ -5,12 +5,15 @@ import com.google.gson.JsonObject;
 import com.team15.webchat.Model.ActiveUser;
 import com.team15.webchat.Model.ApiResponse;
 import com.team15.webchat.Model.Banner;
+import com.team15.webchat.Model.Category;
 import com.team15.webchat.Model.ChatListPaging;
 import com.team15.webchat.Model.ChatPag;
 import com.team15.webchat.Model.Login;
+import com.team15.webchat.Model.PackageProduct;
 import com.team15.webchat.Model.PartialsInfo;
 import com.team15.webchat.Model.ProductList;
 import com.team15.webchat.Model.PurchaseList;
+import com.team15.webchat.Model.RefPointTotal;
 import com.team15.webchat.Model.ReferralPointList;
 import com.team15.webchat.Model.SellerList;
 import com.team15.webchat.Model.ShortProfile;
@@ -118,10 +121,25 @@ public interface APIInterface {
     );
 
     @FormUrlEncoded
+    @POST("auth/remove_transfer_user")
+    Call<JsonObject> transferUser(
+            @Header("Authorization") String token,
+            @Field("user_id") String user_id
+    );
+
+    @FormUrlEncoded
     @POST("auth/active_users")
     Call<ActiveUser> activeUser(
             @Header("Authorization") String token,
             @Field("app_id") String app_id,
+            @Field("page") String currentPage
+    );
+
+    @FormUrlEncoded
+    @POST("auth/transfer_list")
+    Call<ActiveUser> transferList(
+            @Header("Authorization") String token,
+            @Field("seller_id") String seller_id,
             @Field("page") String currentPage
     );
 
@@ -153,12 +171,26 @@ public interface APIInterface {
     Call<List<Banner>> getBanner(
             @Field("app_id") String app_id
     );
+    @FormUrlEncoded
+    @POST("auth/category")
+    Call<List<Category>> getCategory(
+            @Header("Authorization") String token,
+            @Field("app_id") String app_id
+    );
 
     @FormUrlEncoded
     @POST("auth/product_list")
     Call<ProductList.ProductListPaging> getProduct(
             @Header("Authorization") String token,
             @Field("app_id") String app_id,
+            @Field("page") String page
+
+    );
+    @FormUrlEncoded
+    @POST("auth/package_product")
+    Call<PackageProduct.ProductListPaging> getPackage(
+            @Header("Authorization") String token,
+            @Field("category_id") String category_id,
             @Field("page") String page
 
     );
@@ -193,6 +225,15 @@ public interface APIInterface {
     );
 
     @FormUrlEncoded
+    @POST("auth/referral_point_sum")
+    Call<RefPointTotal.RefPointPaging> getReferralPointTotal(
+            @Header("Authorization") String token,
+            @Field("user_id") String user_id,
+            @Field("page") String page
+
+    );
+
+    @FormUrlEncoded
     @POST("auth/online_status")
     Call<JsonObject> isOnline(
             @Header("Authorization") String token,
@@ -218,6 +259,14 @@ public interface APIInterface {
     );
 
     @FormUrlEncoded
+    @POST("auth/unseen_count")
+    Call<JsonObject> getBadgeCount(
+            @Header("Authorization") String token,
+            @Field("seller_id") String user_id,
+            @Field("app_id") String app_id
+    );
+
+    @FormUrlEncoded
     @POST("auth/seller_list")
     Call<List<SellerList>> getSellerList(
             @Header("Authorization") String token,
@@ -238,6 +287,13 @@ public interface APIInterface {
     Call<JsonObject> getSellerContact(
             @Header("Authorization") String token,
             @Field("app_id") String app_id
+    );
+
+    @FormUrlEncoded
+    @POST("auth/seller_purchase_count")
+    Call<JsonObject> getPurchaseCount(
+            @Header("Authorization") String token,
+            @Field("seller_id") String seller_id
     );
 
     @Multipart

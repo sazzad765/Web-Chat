@@ -34,6 +34,7 @@ public class ChatViewModel extends ViewModel {
     private ChatRepository repository;
     private LiveData<User> getUser;
     LiveData<ActiveUser> data;
+    LiveData<ActiveUser> activeUserLiveData;
     LiveData<ChatListPaging> pagingLiveData;
     LiveData<ChatPag> chatPagLiveData;
     LiveData<List<WaitingList>> waitingList;
@@ -46,6 +47,10 @@ public class ChatViewModel extends ViewModel {
     public LiveData<ActiveUser> activeUser(String token, String appId, String currentPage) {
         data = repository.activeUser(token, appId, currentPage);
         return data;
+    }
+    public LiveData<ActiveUser> transferList(String token, String seller_id, String currentPage) {
+        activeUserLiveData = repository.transferList(token, seller_id, currentPage);
+        return activeUserLiveData;
     }
 
     public LiveData<ChatListPaging> getChatList(String token, String user_id, String currentPage) {
@@ -60,6 +65,12 @@ public class ChatViewModel extends ViewModel {
     public LiveData<JsonObject> startChat(String token, String agentId, String user_id, String sellerId) {
         LiveData<JsonObject> objectLiveData;
         objectLiveData = repository.startChat(token,agentId,user_id,sellerId);
+        return objectLiveData;
+    }
+
+    public LiveData<JsonObject> transferUser(String token, String user_id) {
+        LiveData<JsonObject> objectLiveData;
+        objectLiveData = repository.transferUser(token,user_id);
         return objectLiveData;
     }
 

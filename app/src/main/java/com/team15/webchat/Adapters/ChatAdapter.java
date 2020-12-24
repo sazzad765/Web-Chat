@@ -38,10 +38,13 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private boolean isLoadingAdded = false;
 
-    public ChatAdapter(Context context, List<Chat> chatList, String userId) {
+    public ChatAdapter.ChatItemLongPressListener onClickListener;
+
+    public ChatAdapter(Context context, List<Chat> chatList, String userId,ChatItemLongPressListener listener) {
         this.context = context;
         this.userId = userId;
         this.chatList = chatList;
+        this.onClickListener = listener;
     }
 
     @NonNull
@@ -81,7 +84,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
 
         final Chat chat = chatList.get(position);
         switch (getItemViewType(position)) {
@@ -111,6 +114,13 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         }
                     }
                 });
+                rightViewHolder.show_message.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        onClickListener.longPressListener(v,position);
+                        return true;
+                    }
+                });
 
                 break;
 
@@ -127,6 +137,13 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             leftViewHolder.txt_date.setVisibility(View.VISIBLE);
 
                         }
+                    }
+                });
+                leftViewHolder.show_message.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        onClickListener.longPressListener(v,position);
+                        return true;
                     }
                 });
                 break;
@@ -221,6 +238,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             }
         }
+    }
+
+    public interface ChatItemLongPressListener{
+        void longPressListener(View v, int position);
     }
 
 

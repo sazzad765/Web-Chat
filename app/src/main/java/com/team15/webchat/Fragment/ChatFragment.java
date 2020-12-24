@@ -4,6 +4,8 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -27,12 +29,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -85,7 +89,7 @@ public class ChatFragment extends Fragment  {
     private ProgressDialog pDialog;
     User mUser;
 
-    List<Chat> chat;
+    private List<Chat> chat;
 
     private static final int PAGE_START = 1;
     private boolean isLoading = false;
@@ -120,7 +124,12 @@ public class ChatFragment extends Fragment  {
         pDialog.setMessage("Sending...");
         mHandler = new Handler();
 
-        chatAdapter = new ChatAdapter(getActivity(), chat, userId);
+        chatAdapter = new ChatAdapter(getActivity(), chat, userId, new ChatAdapter.ChatItemLongPressListener() {
+            @Override
+            public void longPressListener(View v, int position) {
+                copyText(v,position);
+            }
+        });
         recyclerChat.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -167,10 +176,10 @@ public class ChatFragment extends Fragment  {
             }
         });
 
-        loadFirstPage();
+//        loadFirstPage();
 //        setProfile();
-        seen();
-        waitingPosition();
+
+
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -183,18 +192,46 @@ public class ChatFragment extends Fragment  {
                             recyclerChat.getLayoutManager().smoothScrollToPosition(recyclerChat, null, 0);
                         }
                     }
-                    seen();
                 }
                 waitingPosition();
+                seen();
             }
         };
+
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(Config.MESSAGE_NOTIFICATION));
         return view;
+    }
+
+
+    private void copyText(View v, final int position){
+        final PopupMenu popup = new PopupMenu(getActivity(),v);
+        popup.inflate(R.menu.copy_menu);
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.copy:
+                        ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                        ClipData clip = ClipData.newPlainText("text", chat.get(position).getMessage());
+                        clipboard.setPrimaryClip(clip);
+                        Toast.makeText(getActivity(), "Saved to clip board", Toast.LENGTH_SHORT).show();
+                        break;
+                    default:
+                        break;
+
+                }
+                popup.dismiss();
+                return false;
+            }
+        });
+
+        popup.show();
     }
 
     private final Runnable m_Runnable = new Runnable() {
         public void run() {
             waitingPosition();
-//            loadFirstPage();
             mHandler.postDelayed(m_Runnable, 30000);
         }
     };
@@ -328,17 +365,12 @@ public class ChatFragment extends Fragment  {
     @Override
     public void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mRegistrationBroadcastReceiver,
-                new IntentFilter(Config.MESSAGE_NOTIFICATION));
+
         m_Runnable.run();
         waitingPosition();
         loadFirstPage();
+        seen();
 
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
     }
 
     @Override

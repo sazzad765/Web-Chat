@@ -13,9 +13,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.team15.webchat.Model.ApiResponse;
 import com.team15.webchat.Model.Banner;
+import com.team15.webchat.Model.Category;
+import com.team15.webchat.Model.PackageProduct;
 import com.team15.webchat.Model.PartialsInfo;
 import com.team15.webchat.Model.ProductList;
 import com.team15.webchat.Model.PurchaseList;
+import com.team15.webchat.Model.RefPointTotal;
 import com.team15.webchat.Model.ReferralPointList;
 import com.team15.webchat.Model.SellerList;
 import com.team15.webchat.Model.User;
@@ -28,10 +31,13 @@ import java.util.List;
 public class AppViewModel extends ViewModel {
     private AppRepository repository;
     LiveData<List<Banner>> data;
+    LiveData<List<Category>> dataCategory;
 
     LiveData<ProductList.ProductListPaging>productListLiveData;
+    LiveData<PackageProduct.ProductListPaging>packageProduct;
     LiveData<PurchaseList.PurchaseListPaging>purchaseListPagingLiveData;
     LiveData<ReferralPointList.ReferralPointPaging>referralPointPagingLiveData;
+    LiveData<RefPointTotal.RefPointPaging>refPointPagingLiveData;
 
     public AppViewModel() {
         super();
@@ -43,9 +49,17 @@ public class AppViewModel extends ViewModel {
         data = repository.getBanner();
         return data;
     }
+    public LiveData<List<Category>> getCategory(String token) {
+        dataCategory = repository.getCategory(token);
+        return dataCategory;
+    }
     public LiveData<ProductList.ProductListPaging> getProduct(String token,String page) {
         productListLiveData = repository.getProduct(token,page);
         return productListLiveData;
+    }
+    public LiveData<PackageProduct.ProductListPaging> getPackage(String token,String category_id, String page) {
+        packageProduct = repository.getPackage(token,category_id,page);
+        return packageProduct;
     }
 
     public LiveData<PurchaseList.PurchaseListPaging> getSellerSell(String token,String type,String page) {
@@ -62,6 +76,11 @@ public class AppViewModel extends ViewModel {
         return referralPointPagingLiveData;
     }
 
+    public LiveData<RefPointTotal.RefPointPaging> getReferralPointTotal(String token, String userId, String page) {
+        refPointPagingLiveData = repository.getReferralPointTotal(token,userId,page);
+        return refPointPagingLiveData;
+    }
+
     public LiveData<User> getSeller(String token, String userId) {
         LiveData<User> getUser;
         getUser = repository.getSeller(token, userId);
@@ -71,6 +90,11 @@ public class AppViewModel extends ViewModel {
     public LiveData<JsonObject> getPosition(String token, String userId) {
         LiveData<JsonObject> liveData;
         liveData = repository.getPosition(token, userId);
+        return liveData;
+    }
+    public LiveData<JsonObject> getBadgeCount(String token, String userId) {
+        LiveData<com.google.gson.JsonObject> liveData;
+        liveData = repository.getBadgeCount(token, userId);
         return liveData;
     }
 
@@ -89,6 +113,11 @@ public class AppViewModel extends ViewModel {
     public LiveData<JsonObject> getSellerContact(String token) {
         LiveData<JsonObject> liveData;
         liveData = repository.getSellerContact(token);
+        return liveData;
+    }
+    public LiveData<JsonObject> getPurchaseCount(String token,String user_id) {
+        LiveData<JsonObject> liveData;
+        liveData = repository.getPurchaseCount(token,user_id);
         return liveData;
     }
 

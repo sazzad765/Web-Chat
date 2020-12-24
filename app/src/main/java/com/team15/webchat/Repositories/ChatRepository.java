@@ -80,6 +80,23 @@ public class ChatRepository extends Observable {
         return data;
     }
 
+    public LiveData<ActiveUser> transferList(String token, String seller_id,String currentPage){
+        final MutableLiveData<ActiveUser> data = new MutableLiveData<>();
+        Call<ActiveUser> call2 = apiInterface.transferList(token,seller_id,currentPage);
+        call2.enqueue(new Callback<ActiveUser>() {
+            @Override
+            public void onResponse(Call<ActiveUser> call, Response<ActiveUser> response) {
+                data.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<ActiveUser> call, Throwable t) {
+
+            }
+        });
+        return data;
+    }
+
     public LiveData<ChatListPaging> getChatList(String token, String user_id, String currentPage){
         final MutableLiveData<ChatListPaging> data = new MutableLiveData<>();
         Call<ChatListPaging> call2 = apiInterface.chatList(token,user_id,Config.APP_ID,currentPage);
@@ -100,6 +117,22 @@ public class ChatRepository extends Observable {
     public LiveData<JsonObject> startChat(String token,String agentId, String user_id, String sellerId){
         final MutableLiveData<JsonObject> data = new MutableLiveData<>();
         Call<JsonObject> call2 = apiInterface.startChat(token,Config.APP_ID,agentId,user_id,sellerId);
+        call2.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                data.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+        return data;
+    }
+    public LiveData<JsonObject> transferUser(String token,String user_id){
+        final MutableLiveData<JsonObject> data = new MutableLiveData<>();
+        Call<JsonObject> call2 = apiInterface.transferUser(token,user_id);
         call2.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {

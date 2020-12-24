@@ -223,7 +223,7 @@
                 app:layout_constraintTop_toTopOf="@+id/editPoint" />
 
 
-            <Button
+            <android.widget.Button
                 android:id="@+id/btnGift"
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
@@ -304,7 +304,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/editPurchasePoint"
                 app:layout_constraintTop_toTopOf="@+id/editPurchasePoint" />
 
-            <Button
+            <android.widget.Button
                 android:id="@+id/btnPurchasePoint"
                 android:layout_width="0dp"
                 android:layout_height="30dp"
@@ -318,7 +318,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <Button
+        <android.widget.Button
             android:id="@+id/btnTransfer"
             android:layout_width="wrap_content"
             android:layout_height="25dp"

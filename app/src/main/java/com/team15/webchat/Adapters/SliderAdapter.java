@@ -23,11 +23,11 @@ import java.util.List;
 public class SliderAdapter extends SliderViewAdapter<SliderAdapter.SliderAdapterVH> {
     private Context context;
     private List<Banner> mSliderItems = new ArrayList<>();
-    String sellerId;
+    public SliderAdapterListener onClickListener;
 
-    public SliderAdapter(Context context, String sellerId) {
+    public SliderAdapter(Context context, SliderAdapterListener onClickListener) {
         this.context = context;
-        this.sellerId = sellerId;
+        this.onClickListener = onClickListener;
     }
 
     public void renewItems(List<Banner> sliderItems) {
@@ -50,22 +50,21 @@ public class SliderAdapter extends SliderViewAdapter<SliderAdapter.SliderAdapter
         viewHolder.textViewDescription.setTextColor(Color.WHITE);
         final String url =  sliderItem.getSlider();
         Glide.with(context).load(url).into(viewHolder.imageViewBackground);
-//        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(context, "This is item in position " + position, Toast.LENGTH_SHORT).show();
-//
-//                Intent intent = new Intent(context, ChatActivity.class);
-//                intent.putExtra("receiverId", sellerId);
-//                intent.putExtra("message",url);
-//                context.startActivity(intent);
-//            }
-//        });
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickListener.SliderOnClick(v,position);
+            }
+        });
     }
 
     @Override
     public int getCount() {
         return mSliderItems.size();
+    }
+
+    public interface SliderAdapterListener {
+        void SliderOnClick(View v, int position);
     }
 
     class SliderAdapterVH extends SliderViewAdapter.ViewHolder{

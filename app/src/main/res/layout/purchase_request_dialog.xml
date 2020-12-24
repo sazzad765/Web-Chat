@@ -33,7 +33,7 @@
             android:layout_marginTop="5dp"
             android:textSize="13sp"
             android:textColor="@color/white"
-            android:text="Enter your Game id to complete request" />
+            android:text="Enter your query/details to complete request" />
 
         <EditText
             android:id="@+id/editGameId"
@@ -46,7 +46,7 @@
             android:ems="10"
             android:textSize="14sp"
             android:background="@drawable/login_edit_text"
-            android:hint="enter game id" />
+            android:hint="Write a note" />
 
         <Button
             android:id="@+id/btnReq"

@@ -81,12 +81,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }else if (notification_type.equals(Config.UPDATE_NOTIFICATION)) {
             Intent pushNotification = new Intent(Config.UPDATE_NOTIFICATION);
             LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
-//            playNotificationSound(this);
+        } else if (notification_type.equals(Config.TRANSFER_NOTIFICATION)) {
+            Intent pushNotification = new Intent(Config.UPDATE_NOTIFICATION);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
+
+            String title = remoteMessage.getData().get("title");
+            String body = remoteMessage.getData().get("body");
+            showNotification(title,body);
+
         }
         else{
             Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
             LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
-//            playNotificationSound(this);
         }
 
     }

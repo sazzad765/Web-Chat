@@ -1,78 +1,64 @@
 package com.team15.webchat.Fragment;
 
-import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.widget.NestedScrollView;
+
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType;
 import com.smarteist.autoimageslider.SliderAnimations;
 import com.smarteist.autoimageslider.SliderView;
-import com.team15.webchat.Adapters.ProductListAdapter;
+import com.team15.webchat.Adapters.CategoryAdapter;
+import com.team15.webchat.Adapters.GridSpacingItemDecoration;
+import com.team15.webchat.Adapters.PackageProductListAdapter;
 import com.team15.webchat.Adapters.SliderAdapter;
-import com.team15.webchat.App.Config;
-import com.team15.webchat.ChatActivity;
-import com.team15.webchat.Model.ApiResponse;
 import com.team15.webchat.Model.Banner;
-import com.team15.webchat.Model.Chat;
-import com.team15.webchat.Model.ProductList;
-import com.team15.webchat.Model.User;
+import com.team15.webchat.Model.Category;
+import com.team15.webchat.Model.PackageProduct;
+
+import com.team15.webchat.PackageProductActivity;
 import com.team15.webchat.R;
 import com.team15.webchat.Session.SessionManager;
 import com.team15.webchat.ViewModel.AppViewModel;
 import com.team15.webchat.ViewModel.ChatViewModel;
-import com.team15.webchat.ViewModel.UserViewModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.smarteist.autoimageslider.IndicatorView.utils.DensityUtils.dpToPx;
+
 public class HomeFragment extends Fragment {
-    private RecyclerView recyclerProduct;
-    private TextView txtPoint,txtPurchase;
-    private NestedScrollView nestedScrollView;
+    private RecyclerView recyclerCategory;
+
     private SliderView imageSliderSmall;
     private SliderAdapter adapter;
     private AppViewModel appViewModel;
-    private UserViewModel userViewModel;
     private ChatViewModel chatViewModel;
     private SessionManager sessionManager;
-    List<ProductList.Product> product = new ArrayList<>();
+    List<PackageProduct.Product> product = new ArrayList<>();
 
-
-    private String sellerId, userId, api;
-    private BroadcastReceiver mRegistrationBroadcastReceiver;
-
-    ProductListAdapter productListAdapter;
+    private String agentId, userId, api;
     private final List<Banner> bannerList = new ArrayList<>();
-
-    private static final int PAGE_START = 1;
-    private boolean isLoading = false;
-    private boolean isLastPage = false;
-    private int TOTAL_PAGES;
-    private int currentPage = PAGE_START;
+    private CategoryAdapter categoryAdapter;
+    private  List<Category>categories = new ArrayList<>();
 
     public HomeFragment() {
 
@@ -82,24 +68,24 @@ public class HomeFragment extends Fragment {
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home_user, container, false);
-
-        appViewModel = ViewModelProviders.of(getActivity()).get(AppViewModel.class);
-        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        init(view);
+        appViewModel =  new ViewModelProvider(getActivity()).get(AppViewModel.class);
         chatViewModel = new ViewModelProvider(this).get(ChatViewModel.class);
-
-        recyclerProduct = view.findViewById(R.id.recyclerProduct);
-        imageSliderSmall = view.findViewById(R.id.imageSliderSmall);
-        nestedScrollView = view.findViewById(R.id.nestedScrollView);
-        txtPoint = view.findViewById(R.id.txtPoint);
-        txtPurchase = view.findViewById(R.id.txtPurchase);
 
         sessionManager = new SessionManager(getActivity());
         HashMap<String, String> userInfo = sessionManager.get_user();
-        sellerId = userInfo.get(SessionManager.SELLER_ID);
+        agentId = userInfo.get(SessionManager.SELLER_ID);
         api = userInfo.get(SessionManager.API_KEY);
         userId = userInfo.get(SessionManager.USER_ID);
 
-        adapter = new SliderAdapter(getActivity(), sellerId);
+        adapter = new SliderAdapter(getActivity(), new SliderAdapter.SliderAdapterListener() {
+            @Override
+            public void SliderOnClick(View v, int position) {
+                String url = bannerList.get(position).getSlider();
+                String message = "Do you want message to admin for this offer";
+                sendMessage(url, agentId, "banner",message);
+            }
+        });
         imageSliderSmall.setSliderAdapter(adapter);
         imageSliderSmall.setIndicatorAnimation(IndicatorAnimationType.WORM);
         imageSliderSmall.setSliderTransformAnimation(SliderAnimations.SIMPLETRANSFORMATION);
@@ -111,51 +97,16 @@ public class HomeFragment extends Fragment {
         imageSliderSmall.startAutoCycle();
 
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        productListAdapter = new ProductListAdapter(getActivity(), product, new ProductListAdapter.ProductListAdapterListener() {
-            @Override
-            public void requestOnClick(View v, int position) {
-                purchaseDialog(product.get(position).getId().toString());
-            }
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 2);
+        recyclerCategory.setLayoutManager(mLayoutManager);
+        recyclerCategory.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(16), true));
+        recyclerCategory.setItemAnimator(new DefaultItemAnimator());
+        categoryAdapter = new CategoryAdapter(getActivity(), categories);
+        recyclerCategory.setAdapter(categoryAdapter);
+        categoryAdapter.setOnItemClickListener(onItemClickListener);
 
-            @Override
-            public void messageOnClick(View v, int position) {
-                String message = "Hi i want to buy \npackage: "+product.get(position).getProductName()+"\n"+"Diamond: "
-                        +product.get(position).getQuantity()+" => price: "+product.get(position).getPrice();
-                sendMessage(message,userId,sellerId,"text");
-
-//                new ChatFragment().sendMessage(message,userId,sellerId,"text");
-
-            }
-        });
-        recyclerProduct.setLayoutManager(linearLayoutManager);
-        recyclerProduct.setAdapter(productListAdapter);
-
-        nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if (v.getChildAt(v.getChildCount() - 1) != null) {
-                    if ((scrollY >= (v.getChildAt(v.getChildCount() - 1).getMeasuredHeight() - v.getMeasuredHeight())) &&
-                            scrollY > oldScrollY) {
-                        if (!isLoading && !isLastPage) {
-                            currentPage += 1;
-                            isLoading = true;
-                            loadNextPage();
-                        }
-                    }
-                }
-            }
-        });
-
-        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-
-            }
-        };
         slider();
-        loadFirstPage();
-        setProfile();
+        setCategory();
 
         return view;
     }
@@ -166,135 +117,59 @@ public class HomeFragment extends Fragment {
             public void onChanged(List<Banner> banners) {
                 if (banners != null) {
                     bannerList.addAll(banners);
-//                    pagerSliderAdapter.notifyDataSetChanged();
                     adapter.renewItems(banners);
                 }
             }
         });
     }
+    private int dpToPx(int dp) {
+        Resources r = getResources();
+        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
+    }
 
-    private void setProfile() {
-        userViewModel.getUser("Bearer " + api, userId).observe(getActivity(), new Observer<User>() {
-            @SuppressLint("SetTextI18n")
+    private final View.OnClickListener onItemClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            RecyclerView.ViewHolder viewHolder = (RecyclerView.ViewHolder) view.getTag();
+            int position = viewHolder.getAdapterPosition();
+            Category list = categories.get(position);
+            Intent intent = new Intent(getActivity(), PackageProductActivity.class);
+            intent.putExtra("data", list);
+            startActivity(intent);
+        }
+    };
+
+    private void setCategory() {
+        appViewModel.getCategory("Bearer " + api).observe(getActivity(), new Observer<List<Category>>() {
             @Override
-            public void onChanged(User user) {
-                if (user!=null) {
-                    txtPoint.setText(user.getPoint().toString());
-                    txtPurchase.setText(user.getPurchase().toString());
+            public void onChanged(List<Category> data) {
+                if (data != null) {
+                    categories.clear();
+                    categories.addAll(data);
+                    categoryAdapter.notifyDataSetChanged();
                 }
             }
         });
     }
 
-    public void sendMessage(final String message, String senderId, final String receiverId, final String type) {
-
-            new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom))
-                    .setTitle("Message")
-                    .setMessage(message)
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            chatViewModel.sendMessage("Bearer " + api, userId, receiverId, message, type, "user");
-                        }
-                    })
-                    .setNegativeButton(android.R.string.cancel,null)
-                    .show();
-
-
-
-    }
-
-
-    private void purchaseDialog(final String productId) {
-        final AlertDialog dialogBuilder = new AlertDialog.Builder(getActivity()).create();
-        LayoutInflater inflater = this.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.purchase_request_dialog, null);
-
-        final EditText editGameId = (EditText) dialogView.findViewById(R.id.editGameId);
-        Button buttonSubmit = (Button) dialogView.findViewById(R.id.btnReq);
-        Button buttonCancel = (Button) dialogView.findViewById(R.id.btnCancel);
-
-
-        buttonCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialogBuilder.dismiss();
-            }
-        });
-        buttonSubmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String gameId = editGameId.getText().toString();
-                if (gameId.length() <= 0) {
-                    editGameId.requestFocus();
-                    editGameId.setError("enter game id");
-                    return;
-                }
-                purchaseRequest(productId, gameId);
-                dialogBuilder.dismiss();
-            }
-        });
-
-        dialogBuilder.setView(dialogView);
-        dialogBuilder.show();
-    }
-
-
-    private void purchaseRequest(String productId, String gameId) {
-        appViewModel.sellRequest("Bearer " + api, userId, productId, gameId).observe(getActivity(), new Observer<ApiResponse>() {
-            @Override
-            public void onChanged(ApiResponse apiResponse) {
-                if (apiResponse != null) {
-                    showDialog(apiResponse.getMessage());
-                }
-            }
-        });
-    }
-
-    private void loadFirstPage() {
-        appViewModel.getProduct("Bearer " + api, "1").observe(getActivity(), new Observer<ProductList.ProductListPaging>() {
-            @Override
-            public void onChanged(ProductList.ProductListPaging productList) {
-                if (productList != null) {
-                    product.clear();
-                    TOTAL_PAGES = productList.getLastPage();
-                    product.addAll(productList.getData());
-                    productListAdapter.notifyDataSetChanged();
-
-                    if (currentPage < TOTAL_PAGES) productListAdapter.addLoadingFooter();
-                    else isLastPage = true;
-                }
-
-            }
-        });
-    }
-
-    private void loadNextPage() {
-        appViewModel.getProduct("Bearer " + api, String.valueOf(currentPage)).observe(getActivity(), new Observer<ProductList.ProductListPaging>() {
-            @Override
-            public void onChanged(ProductList.ProductListPaging productList) {
-                if (productList != null) {
-                    productListAdapter.removeLoadingFooter();
-                    isLoading = false;
-                    product.addAll(productList.getData());
-                    productListAdapter.notifyDataSetChanged();
-
-                    if (currentPage < TOTAL_PAGES) productListAdapter.addLoadingFooter();
-                    else isLastPage = true;
-                }
-
-            }
-        });
-    }
-
-    private void showDialog(String message) {
+    public void sendMessage(final String message, final String receiverId, final String type, String body) {
         new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom))
-                .setTitle("Purchase")
-                .setMessage(message)
+                .setTitle("Message")
+                .setMessage(body)
                 .setIcon(android.R.drawable.ic_dialog_alert)
-                .setPositiveButton(android.R.string.ok, null)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        chatViewModel.sendMessage("Bearer " + api, userId, receiverId, message, type, "user");
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, null)
                 .show();
+    }
+
+    private void init(View view) {
+        imageSliderSmall = view.findViewById(R.id.imageSliderSmall);
+        recyclerCategory= view.findViewById(R.id.recyclerCategory);
     }
 
 //    @Override

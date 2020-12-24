@@ -15,6 +15,8 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,12 +27,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.ContextThemeWrapper;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -103,7 +107,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         Bundle extras = getIntent().getExtras();
         receiverId = extras.getString("receiverId");
 
-        chatAdapter = new ChatAdapter(this, chat, agentId);
+        chatAdapter = new ChatAdapter(this, chat, agentId, new ChatAdapter.ChatItemLongPressListener() {
+            @Override
+            public void longPressListener(View v, int position) {
+                copyText(v,position);
+            }
+        });
         recyclerChat.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -157,6 +166,31 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         };
+
+    }
+    private void copyText(View v, final int position){
+        final PopupMenu popup = new PopupMenu(this,v);
+        popup.inflate(R.menu.copy_menu);
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.copy:
+                        ClipboardManager clipboard = (ClipboardManager) ChatActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
+                        ClipData clip = ClipData.newPlainText("text", chat.get(position).getMessage());
+                        clipboard.setPrimaryClip(clip);
+                        Toast.makeText(ChatActivity.this, "Saved to clip board", Toast.LENGTH_SHORT).show();
+                        break;
+                    default:
+                        break;
+
+                }
+                popup.dismiss();
+                return false;
+            }
+        });
+
+        popup.show();
     }
 
     private void setProfile() {
@@ -334,7 +368,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             public void onChanged(ApiResponse apiResponse) {
                                 if (apiResponse != null) {
                                     Toast.makeText(ChatActivity.this, apiResponse.getMessage(), Toast.LENGTH_SHORT).show();
-                                    loadFirstPage();
+                                    if (apiResponse.getSuccess()==1){
+                                        sendMessage("Your purchase successfully done", "text", receiverId);
+                                    }
                                 }
                             }
                         });

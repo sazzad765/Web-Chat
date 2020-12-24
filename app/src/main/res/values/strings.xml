@@ -17,4 +17,22 @@
     <string name="reg_welcome_note">Welcome To Gaming World</string>
     <string name="about1">Small remark when filling in this Privacy Policy generator: Not all parts of this Privacy Policy might be applicable to your website. When there are parts that are not applicable, these can be removed. Optional elements can be selected in step 2. The accuracy of the generated Privacy Policy on this website is not legally binding. Use at your own risk.</string>
     <string name="forget_password">Forget Password!</string>
+    <string name="pending_point">Pending Point</string>
+    <string name="ref_point">Ref Point</string>
+    <string name="_00">00</string>
+    <string name="point">Point</string>
+    <string name="purchase">Purchase</string>
+    <string name="change_password">Change Password</string>
+    <string name="name">Name</string>
+    <string name="phone">Phone</string>
+    <string name="reference_code">Reference Code</string>
+    <string name="refer_by">Refer By</string>
+    <string name="enter_reference_code">enter reference code</string>
+    <string name="save">Save</string>
+    <string name="seller_contact">Seller Contact</string>
+    <string name="hotline">Hotline:</string>
+    <string name="facebook">FaceBook:</string>
+    <string name="mail">Mail:</string>
+    <string name="our_product">Our Product:</string>
+    <string name="no_data_available">No Data Available</string>
 </resources>

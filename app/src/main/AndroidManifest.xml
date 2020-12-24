@@ -22,7 +22,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".AboutActivity"></activity>
+        <activity android:name=".BulkMessageActivity"></activity>
+        <activity android:name=".PackageProductActivity" />
+        <activity android:name=".AboutActivity" />
         <activity android:name=".OTPVerificationActivity" />
         <activity android:name=".ForgetPasswordActivity" />
         <activity android:name=".ReferralPointActivity" />
@@ -63,7 +65,8 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".App.IsOnline"
+        <service
+            android:name=".App.IsOnline"
             android:stopWithTask="false" />
     </application>
 

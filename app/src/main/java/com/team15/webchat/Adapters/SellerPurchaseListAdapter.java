@@ -86,7 +86,7 @@ public class SellerPurchaseListAdapter extends RecyclerView.Adapter<RecyclerView
                 });
 //                viewHolder.txtPrice.setText(product1.getPrice().toString());
 //                Glide.with(context)
-//                        .load(product1.getImage())
+//                        .load(product1.get)
 //                        .apply(RequestOptions.centerCropTransform())
 //                        .placeholder(R.drawable.purchase)
 //                        .into(viewHolder.imageProduct);

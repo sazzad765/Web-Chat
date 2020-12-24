@@ -29,6 +29,7 @@ import com.team15.webchat.R;
 import com.team15.webchat.Session.SessionManager;
 import com.team15.webchat.UserPurchaseActivity;
 import com.team15.webchat.ViewModel.AppViewModel;
+import com.team15.webchat.ViewModel.ChatViewModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +40,7 @@ public class SellerPurchaseFragment extends Fragment {
     SellerPurchaseListAdapter sellerPurchaseListAdapter;
     private AppViewModel appViewModel;
     List<PurchaseList.Purchase> purchase = new ArrayList<>();
-    private  SessionManager sessionManager;
+    private SessionManager sessionManager;
 
     private static final int PAGE_START = 1;
     private boolean isLoading = false;
@@ -47,7 +48,7 @@ public class SellerPurchaseFragment extends Fragment {
     private int TOTAL_PAGES;
     private int currentPage = PAGE_START;
     private String api;
-//    private String sellerId;
+    //    private String sellerId;
     private String type;
     private String id;
 
@@ -75,7 +76,7 @@ public class SellerPurchaseFragment extends Fragment {
 
             @Override
             public void acceptOnClick(View v, int position) {
-                acceptPurchase(purchase.get(position).getSellId().toString(),purchase.get(position).getUserId().toString());
+                acceptPurchase(purchase.get(position).getSellId().toString(), purchase.get(position).getUserId().toString());
             }
         });
         recyclerPurchaseList.setLayoutManager(linearLayoutManager);
@@ -127,7 +128,11 @@ public class SellerPurchaseFragment extends Fragment {
     }
 
     private void loadFirstPage() {
-        appViewModel.getSellerSell("Bearer " + api,type, "1").observe(getActivity(), new Observer<PurchaseList.PurchaseListPaging>() {
+
+        isLastPage = false;
+        currentPage= 1;
+
+        appViewModel.getSellerSell("Bearer " + api, type, "1").observe(getActivity(), new Observer<PurchaseList.PurchaseListPaging>() {
             @Override
             public void onChanged(PurchaseList.PurchaseListPaging purchaseList) {
                 if (purchaseList != null) {
@@ -136,8 +141,13 @@ public class SellerPurchaseFragment extends Fragment {
                     purchase.addAll(purchaseList.getData());
                     sellerPurchaseListAdapter.notifyDataSetChanged();
 
-                    if (currentPage < TOTAL_PAGES) sellerPurchaseListAdapter.addLoadingFooter();
-                    else isLastPage = true;
+                    if (currentPage < TOTAL_PAGES){
+//                        sellerPurchaseListAdapter.addLoadingFooter();
+//                        isLastPage = false;
+                    }
+                    else {
+                        isLastPage = true;
+                    }
                 }
 
             }
@@ -145,24 +155,28 @@ public class SellerPurchaseFragment extends Fragment {
     }
 
     private void loadNextPage() {
-        appViewModel.getSellerSell("Bearer " + api,type, String.valueOf(currentPage)).observe(getActivity(), new Observer<PurchaseList.PurchaseListPaging>() {
+        appViewModel.getSellerSell("Bearer " + api, type, String.valueOf(currentPage)).observe(getActivity(), new Observer<PurchaseList.PurchaseListPaging>() {
             @Override
             public void onChanged(PurchaseList.PurchaseListPaging purchaseList) {
                 if (purchaseList != null) {
-                    sellerPurchaseListAdapter.removeLoadingFooter();
+//                    sellerPurchaseListAdapter.removeLoadingFooter();
                     isLoading = false;
                     purchase.addAll(purchaseList.getData());
                     sellerPurchaseListAdapter.notifyDataSetChanged();
 
-                    if (currentPage < TOTAL_PAGES) sellerPurchaseListAdapter.addLoadingFooter();
-                    else isLastPage = true;
+                    if (currentPage < TOTAL_PAGES){
+//                        sellerPurchaseListAdapter.addLoadingFooter();
+                    }
+                    else {
+                        isLastPage = true;
+                    }
                 }
             }
         });
     }
 
 
-    private void cancelPurchase(final String sellId){
+    private void cancelPurchase(final String sellId) {
         new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom))
                 .setTitle("Purchase")
                 .setMessage("Do you really want to cancel")
@@ -170,10 +184,10 @@ public class SellerPurchaseFragment extends Fragment {
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        appViewModel.cancelPurchase("Bearer " + api,sellId).observe(getActivity(), new Observer<ApiResponse>() {
+                        appViewModel.cancelPurchase("Bearer " + api, sellId).observe(getActivity(), new Observer<ApiResponse>() {
                             @Override
                             public void onChanged(ApiResponse apiResponse) {
-                                if (apiResponse!=null){
+                                if (apiResponse != null) {
                                     Toast.makeText(getActivity(), apiResponse.getMessage(), Toast.LENGTH_SHORT).show();
                                     loadFirstPage();
                                 }
@@ -184,7 +198,7 @@ public class SellerPurchaseFragment extends Fragment {
                 .setNegativeButton(android.R.string.no, null).show();
     }
 
-    private void acceptPurchase(final String sellId, final String userId){
+    private void acceptPurchase(final String sellId, final String userId) {
         new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom))
                 .setTitle("Purchase")
                 .setMessage("Do you really want to approve this purchase")
@@ -192,15 +206,15 @@ public class SellerPurchaseFragment extends Fragment {
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        appViewModel.acceptPurchase("Bearer " + api,sellId,id).observe(getActivity(), new Observer<ApiResponse>() {
+                        appViewModel.acceptPurchase("Bearer " + api, sellId, id).observe(getActivity(), new Observer<ApiResponse>() {
                             @Override
                             public void onChanged(ApiResponse apiResponse) {
-                                if (apiResponse!=null){
+                                if (apiResponse != null) {
                                     Toast.makeText(getActivity(), apiResponse.getMessage(), Toast.LENGTH_SHORT).show();
                                     loadFirstPage();
-                                    if (apiResponse.getSuccess()==1){
+                                    if (apiResponse.getSuccess() == 1) {
                                         Intent intent = new Intent(getActivity(), ChatActivity.class);
-                                        intent.putExtra("receiverId",userId);
+                                        intent.putExtra("receiverId", userId);
                                         startActivity(intent);
                                     }
                                 }

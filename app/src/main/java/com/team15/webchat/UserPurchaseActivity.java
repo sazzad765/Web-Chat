@@ -129,7 +129,7 @@ public class UserPurchaseActivity extends AppCompatActivity {
                     purchase.addAll(purchaseList.getData());
                     userPurchaseListAdapter.notifyDataSetChanged();
 
-                    if (currentPage < TOTAL_PAGES) userPurchaseListAdapter.addLoadingFooter();
+                    if (currentPage != TOTAL_PAGES) userPurchaseListAdapter.addLoadingFooter();
                     else isLastPage = true;
                 }
             }

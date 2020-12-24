@@ -32,7 +32,7 @@ import java.util.HashMap;
 
 
 public class ProfileFragment extends Fragment {
-    private TextView  txtName, txtName1, txtPhone, txtId;
+    private TextView  txtName, txtName1, txtPhone, txtId,txtPurchaseCount;
     private ImageButton txt_edit;
     private TextView txtSellerContact, txtSellerFb, txtSellerMail,txtChangePass;
     private ImageView profile_image;
@@ -85,11 +85,13 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onChanged(ShortProfile user) {
                 if (user!=null) {
-
                     txtName.setText(user.getName());
                     txtName1.setText(user.getName());
                     txtPhone.setText(user.getPhone());
                     txtId.setText(user.getId().toString());
+                    if (getActivity() == null) {
+                        return;
+                    }
                     Glide
                             .with(getActivity())
                             .load(user.getImage())
@@ -116,9 +118,23 @@ public class ProfileFragment extends Fragment {
         });
     }
 
+    private void getPurchaseCount() {
+        appViewModel.getPurchaseCount("Bearer " + api,userId).observe(getActivity(), new Observer<JsonObject>() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onChanged(JsonObject object) {
+                if (object != null) {
+                    txtPurchaseCount.setText(object.get("seller_purchase_count").toString());
+                }
+
+            }
+        });
+    }
+
     @Override
     public void onResume() {
         super.onResume();
+        getPurchaseCount();
     }
 
     private void init(View view) {
@@ -132,6 +148,7 @@ public class ProfileFragment extends Fragment {
         txtSellerFb = view.findViewById(R.id.txtSellerFb);
         txtSellerMail = view.findViewById(R.id.txtSellerMail);
         txtChangePass= view.findViewById(R.id.txtChangePass);
+        txtPurchaseCount= view.findViewById(R.id.txtPurchaseCount);
     }
 
 

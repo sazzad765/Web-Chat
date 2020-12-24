@@ -100,9 +100,6 @@ public class ActiveListFragment extends Fragment {
                     isLoading = false;
                     if (activeUser.getTotal() > 0) {
                         results.addAll(activeUser.getData());
-//                        for (int i = 0; i < activeUser.getData().size(); i++) {
-//                            results.add(activeUser.getData().get(i));
-//                        }
                         activeListAdapter.notifyDataSetChanged();
                     }
                     if (currentPage != TOTAL_PAGES) activeListAdapter.addLoadingFooter();
@@ -122,9 +119,6 @@ public class ActiveListFragment extends Fragment {
                     activeListProgressBar.setVisibility(View.INVISIBLE);
                     TOTAL_PAGES = activeUser.getLastPage();
                     if (activeUser.getTotal() > 0) {
-//                        for (int i = 0; i < activeUser.getData().size(); i++) {
-//                            results.add(activeUser.getData().get(i));
-//                        }
                         results.addAll(activeUser.getData());
                         activeListAdapter.notifyDataSetChanged();
                     }

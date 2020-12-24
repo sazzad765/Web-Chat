@@ -11,35 +11,49 @@
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
         app:layout_constraintTop_toTopOf="parent">
-        <ImageView
-            android:id="@+id/imgBack"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/abc_vector_test"
-            tools:layout_editor_absoluteX="39dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imgBack"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:onClick="imgBack"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="0dp"
+                app:srcCompat="@drawable/abc_vector_test" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="Referral"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:theme="@style/toolbar_textview" />
+        </LinearLayout>
+
     </androidx.appcompat.widget.Toolbar>
 
-    <TextView
-        android:id="@+id/textView15"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
-        android:text="Referral Point:"
-        android:textSize="20sp"
-        android:theme="@style/txt_bold_small_title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar4" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerReferralPointList"
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/pager_follow"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView15" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tab_layout_follow" />
 
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout_follow"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar4" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -23,6 +23,7 @@ import com.team15.webchat.Repositories.ChatRepository;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 import id.zelory.compressor.Compressor;
@@ -77,6 +78,12 @@ public class ChatViewModel extends ViewModel {
     public LiveData<ChatPag> messageData(String token, String sender_id, String receiver_id, String page) {
         chatPagLiveData = repository.messageData(token, sender_id, receiver_id, page);
         return chatPagLiveData;
+    }
+
+    public LiveData<ApiResponse> bulkMessage(String token, String message, String jsonUserId,String select) {
+        LiveData<ApiResponse>data;
+        data = repository.bulkMessage(token, message,jsonUserId,select);
+        return data;
     }
 
     public void sendMessage(String token, String senderId, String receiverId, String message, String type,String user_type) {

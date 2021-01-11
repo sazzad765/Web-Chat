@@ -1,10 +1,10 @@
 package com.team15.webchat.Adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.team15.webchat.ChatActivity;
 import com.team15.webchat.Model.ActiveUserList;
 import com.team15.webchat.R;
 
@@ -22,16 +21,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-
     private Context context;
     private List<ActiveUserList> userList = new ArrayList<>();
+    ArrayList<String> arrayListUser = new ArrayList<>();
     private static final int LOADING = 0;
     private static final int ITEM = 1;
     private boolean isLoadingAdded = false;
 
-    public UserListAdapter(Context context, List<ActiveUserList> userList) {
+    public userListAdapterListener onClickListener;
+
+    public UserListAdapter(Context context, List<ActiveUserList> userList, ArrayList<String> arrayListUser, userListAdapterListener listener) {
         this.context = context;
         this.userList = userList;
+        this.onClickListener = listener;
+        this.arrayListUser = arrayListUser;
     }
 
     @NonNull
@@ -42,7 +45,7 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         switch (viewType) {
             case ITEM:
-                View viewItem = inflater.inflate(R.layout.user_list_row, parent, false);
+                View viewItem = inflater.inflate(R.layout.user_list_checkbok, parent, false);
                 viewHolder = new UserViewHolder(viewItem);
                 break;
             case LOADING:
@@ -54,28 +57,28 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
 
         final ActiveUserList activeUserList = userList.get(position);
         switch (getItemViewType(position)) {
             case ITEM:
-                UserViewHolder userViewHolder = (UserViewHolder) holder;
+                final UserViewHolder userViewHolder = (UserViewHolder) holder;
                 userViewHolder.txtName.setText(activeUserList.getName());
                 Glide.with(context).load(activeUserList.getImage()).apply(RequestOptions.centerCropTransform()).into(userViewHolder.profileImage);
-                if (activeUserList.getActiveStatus()==1){
+                if (activeUserList.getActiveStatus() == 1) {
                     userViewHolder.active_status.setImageResource(R.color.active);
-                }else {
+                } else {
                     userViewHolder.active_status.setImageResource(R.color.inactive);
                 }
-//                userViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        Intent intent = new Intent(context, ChatActivity.class);
-//                        intent.putExtra("receiverId", activeUserList.getUserId().toString());
-//                        context.startActivity(intent);
-//
-//                    }
-//                });
+
+                userViewHolder.checkBoxparent.setChecked(arrayListUser.contains(activeUserList.getUserId().toString()));
+
+                userViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onClickListener.isSelectClick(v, position);
+                    }
+                });
                 break;
 
             case LOADING:
@@ -113,17 +116,23 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return userList.get(position);
     }
 
+    public interface userListAdapterListener {
+        void isSelectClick(View v, int position);
+    }
+
 
     public class UserViewHolder extends RecyclerView.ViewHolder {
 
         private TextView txtName;
-        private ImageView profileImage,active_status;
+        private ImageView profileImage, active_status;
+        CheckBox checkBoxparent;
 
         public UserViewHolder(View itemView) {
             super(itemView);
-            profileImage =  itemView.findViewById(R.id.profileImage);
-            active_status =  itemView.findViewById(R.id.active_status);
+            profileImage = itemView.findViewById(R.id.profileImage);
+            active_status = itemView.findViewById(R.id.active_status);
             txtName = itemView.findViewById(R.id.txtName);
+            checkBoxparent = (CheckBox) itemView.findViewById(R.id.chbContent);
         }
     }
 

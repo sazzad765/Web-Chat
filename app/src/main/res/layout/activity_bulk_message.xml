@@ -5,57 +5,104 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".BulkMessageActivity">
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-        <LinearLayout
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_height="match_parent">
 
             <ImageView
                 android:id="@+id/imgBack"
                 android:layout_width="40dp"
                 android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
                 android:onClick="imgBack"
-                android:layout_alignParentTop="true"
-                android:layout_marginTop="0dp"
                 app:srcCompat="@drawable/abc_vector_test" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
+                android:layout_toEndOf="@+id/imgBack"
                 android:text="Bulk Message"
+                android:textColor="@color/white"
                 android:textSize="17sp"
                 android:textStyle="bold"
-                android:textColor="@color/white"
+                android:layout_centerVertical="true"
                 android:theme="@style/toolbar_textview" />
-        </LinearLayout>
+
+        </RelativeLayout>
 
     </androidx.appcompat.widget.Toolbar>
 
-    <EditText
-        android:id="@+id/editTextMessage"
-        android:layout_width="0dp"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:layout_margin="16dp"
-        android:inputType="textLongMessage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar4" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar4">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerUserList"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextMessage" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <EditText
+                android:id="@+id/editTextMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:minHeight="100dp"
+                android:background="@drawable/login_edit_text"
+                android:hint="@string/type_a_message"
+                android:inputType="textMultiLine" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerUserList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/btnSendAll"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editTextMessage" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnSend"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_below="@+id/editTextMessage"
+                android:layout_alignEnd="@+id/editTextMessage"
+                android:background="@drawable/round_button"
+                android:text="send"
+                android:textColor="@color/white" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnSendAll"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_alignTop="@+id/btnSend"
+                android:background="@drawable/round_button"
+                android:layout_marginEnd="10dp"
+                android:layout_toStartOf="@+id/btnSend"
+                android:textColor="@color/white"
+                android:text="send All" />
+        </RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
+
 
     <ProgressBar
         android:id="@+id/activeListProgressBar"

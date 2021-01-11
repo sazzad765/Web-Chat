@@ -199,6 +199,23 @@ public class ChatRepository extends Observable {
         return chatData;
     }
 
+    public LiveData<ApiResponse> bulkMessage(String token, String message, String jsonUserId,String select){
+        final MutableLiveData<ApiResponse> apiResponseMutableLiveData = new MutableLiveData<>();
+        Call<ApiResponse> call2 = apiInterface.bulkMessage(token,message,jsonUserId,select,Config.APP_ID);
+        call2.enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                apiResponseMutableLiveData.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse> call, Throwable t) {
+
+            }
+        });
+        return apiResponseMutableLiveData;
+    }
+
 
     private static class SendMessageAsyncTask extends AsyncTask<List, Void,Void> {
         private final APIInterface apiInterface;

@@ -20,6 +20,7 @@ import com.team15.webchat.Model.ShortProfile;
 import com.team15.webchat.Model.User;
 import com.team15.webchat.Model.WaitingList;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.MultipartBody;
@@ -151,6 +152,16 @@ public interface APIInterface {
             @Field("receiver_id") String receiver_id,
             @Field("app_id") String app_id,
             @Field("page") String page
+    );
+
+    @FormUrlEncoded
+    @POST("auth/bulk_message")
+    Call<ApiResponse> bulkMessage(
+            @Header("Authorization") String token,
+            @Field("message") String message,
+            @Field("user_ids") String jsonUserId,
+            @Field("select") String select,
+            @Field("app_id") String app_id
     );
 
     @FormUrlEncoded

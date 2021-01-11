@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class APIClient {
     private static Retrofit retrofit;
 
-    private static final String BASE_URL = "http://www.post.freedownloadimage.com/api/";
+    private static final String BASE_URL = "http://rioleafit.com/game/api/";
 
     public static Retrofit getRetrofitInstance() {
 

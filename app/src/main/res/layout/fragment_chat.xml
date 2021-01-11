@@ -40,7 +40,7 @@
                 android:layout_toStartOf="@id/btn_send"
                 android:layout_toEndOf="@+id/imgSelect"
                 android:background="@drawable/chat_edit_text"
-                android:hint="Type a message..."
+                android:hint="@string/type_a_message"
                 android:textColor="@color/white"
                 android:theme="@style/ChatEditText" />
 

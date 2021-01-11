@@ -29,7 +29,7 @@
         android:id="@+id/view4"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@+id/textView28"
+        android:layout_below="@+id/layout"
         android:layout_marginStart="20dp"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="20dp"
@@ -40,21 +40,22 @@
         android:id="@+id/layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView29"
-        android:orientation="horizontal"
-        android:layout_marginTop="5dp"
-        android:gravity="end">
+        android:layout_below="@+id/textView28"
+        android:gravity="end"
+        android:orientation="horizontal">
+
         <android.widget.Button
             android:id="@+id/btnAccept"
             android:layout_width="wrap_content"
             android:layout_height="25dp"
-            android:background="@drawable/round_button"
-            android:text="Accept"
-            android:visibility="gone"
             android:layout_marginEnd="10dp"
+            android:background="@drawable/round_button"
+            android:visibility="gone"
+            android:text="Accept"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="12sp" />
+
         <android.widget.Button
             android:id="@+id/btnCancel"
             android:layout_width="wrap_content"
